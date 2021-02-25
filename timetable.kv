@@ -1,0 +1,442 @@
+#: import RGBA kivy.utils.rgba 
+
+Screen_Manager:
+    UserInput: 
+    MainScreen:
+    TimeTableScreen:
+
+<CustomTextInput@TextInput>:
+    background_color: RGBA(app.theme['tile_label'])
+    #size_hint_max_y: dp(50)
+    foreground_color: RGBA(app.theme['secondary_color'])
+    font_size: sp(16)
+    size_hint_max_x: dp(400)
+<CustomButton@Button>:
+    background_color: RGBA(app.theme['button']) if self.state == 'normal' else RGBA(app.theme['buttondown'])
+    background_normal: ''
+    background_down: ''
+    size_hint_max_y: dp(60)
+    #size_hint_max_x: dp(200)
+    color: RGBA(app.theme['secondary_color'])
+    font_size: sp(17)
+<SlotButton>:
+    canvas.before:
+        Color:
+            rgba: RGBA(app.theme['tile_background'])
+        RoundedRectangle:
+            size: self.width + dp(15), self.height + dp(15)
+            pos: self.x - dp(7.5), self.y - dp(7.5)
+    background_color: RGBA(app.theme['button']) if self.state == 'normal' else RGBA(app.theme['buttondown'])
+    color: RGBA(app.theme['main_fonts'])
+    background_normal: ''
+    background_down: ''
+    font_size: sp(17)
+    text: root.slot_text
+<CustomModalView>:
+    overlay_color: (1,1,1,0)
+
+<HeadingLabel@Label>:
+    canvas.before:
+        Color:
+            rgba:RGBA(app.theme['tile_grid'])
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+    font_name: 'Fonts/title'
+    size_hint_y: None
+    size_hint_x: None
+    pos_hint: {'center_x': 0.5}
+    halign: 'center'  
+    color: RGBA(app.theme['main_fonts'])
+    width: self.texture_size[0]
+    height: self.texture_size[1] + dp(50)
+    font_size: root.width/22 if root.width/22 <= sp(25) else sp(25)
+
+<TileLabel@Label>:
+    canvas.before:
+        Color:
+            rgba: RGBA(app.theme['tile_label'])
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: dp(10),dp(10),dp(10),dp(10)
+    color: RGBA(app.theme['secondary_color'])
+    markup: True
+
+<Tile>:
+    canvas.before:
+        Color:
+            rgba:RGBA(app.theme['tile_background'])
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: dp(5),dp(5),dp(5),dp(5)
+    cols: 1
+    spacing: dp(5)
+    size_hint_min_x: dp(200)
+    padding: dp(10)
+    TileLabel:
+        id: subject
+        text: '[b]' + root.subject_name + '[/b]'
+        color: RGBA(app.theme['main_fonts'])
+    TileLabel:
+        id: time
+        text: root.time
+    BoxLayout:
+        spacing: dp(5)
+        TileLabel:
+            id: slot
+            text: root.slot
+        TileLabel:
+            id: sub_code
+            text: root.subject_code 
+    TileLabel:
+        id: academic_block
+        text: root.academic_block
+
+<QuickMessage>:
+    canvas.before:
+        Color:
+            rgba: RGBA(app.theme['tile_background'])
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    orientation: 'vertical'
+    padding: dp(10)
+    spacing: dp(15)
+    TileLabel:
+        id: title
+        size_hint_y: None
+        height: dp(30)
+        disabled_color: self.color
+        color: RGBA(app.theme['main_fonts'])
+
+    ScrollView:
+        do_scroll_x: False
+        do_scroll_y: True
+        scroll_type: ['content', 'bars']
+        bar_width: 5
+        bar_color:RGBA(app.theme['tile_grid'])
+        TileLabel:
+            id: message
+            padding: dp(10), dp(10)
+            height: self.texture_size[1]
+            text_size: self.width,None
+            disabled_color: self.color
+            width: root.width - root.width/11
+            #halign: 'center'
+            color: app.theme['secondary_color']
+            line_height: 1.5
+            size_hint: None, None
+            font_size: sp(16)
+    BoxLayout:
+        size_hint_y: None
+        height: dp(40)
+        size_hint_x: 0.5
+        pos_hint: {'right': 1}
+        CustomButton:
+            id: close
+            disabled_color: self.color
+            background_disabled_normal: self.background_normal
+            background_color: RGBA(app.theme['tile_label'])
+            text: 'Okay'
+
+<UserInput>:
+    name: 'UserInput'
+    Screen_Manager:
+        id: user_input_sc_manager
+        Screen:
+            name: "schedule_setter"
+            BoxLayout:
+                orientation: 'vertical'
+                padding: 0, dp(20), 0, 0
+                HeadingLabel:
+                    id: title_question
+                    text: 'Are you wanting to make a schedule for VIT or another Institute?'
+                    text_size: root.width - dp(30), None
+                    
+                    
+                BoxLayout:
+                    padding: dp(50)
+                    orientation: 'vertical'
+                    BoxLayout:
+                        orientation: 'vertical' # this boxlayout is just for the looks, it doesn't do anything, just that tile color
+                        padding: dp(20)
+                        spacing: dp(20)
+                        canvas.before:
+                            Color:
+                                rgba:RGBA(app.theme['tile_grid'])
+                            Rectangle:
+                                size: self.size
+                                pos: self.pos
+                        BoxLayout:
+                            orientation: 'vertical'
+                            size_hint_y: 0.6
+                            size_hint_max_y: dp(250)
+                            pos_hint: {'center_y':0.5}
+                            BoxLayout:
+                                spacing: dp(8)
+                                padding: dp(10)
+                                CheckBox:
+                                    id: vit
+                                    active: not other.active 
+                                    enabled: self.active
+                                    color: RGBA(app.theme['main_fonts'])
+                                TileLabel:
+                                    text: "VIT"
+                                    font_size: sp(22)
+                        
+                            BoxLayout:
+                                spacing: dp(8)
+                                padding: dp(10)
+                                CheckBox:
+                                    id: other
+                                    active: not vit.active 
+                                    enabled: self.active
+                                    color: RGBA(app.theme['main_fonts'])
+                                TileLabel:
+                                    text: "Other"
+                                    font_size: sp(22)
+                        Widget:  
+                            size_hint_y: 0.2
+                            
+                        CustomButton:
+                            text: 'Submit'
+                            size_hint_y: 0.2
+                            size_hint_max_y: dp(40)
+                            size_hint_x: 0.5
+                            pos_hint: {'center_x': 0.5}           
+                            on_release: root.set_schedule_type()
+        Screen:
+            name: 'AddSubject'
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: root.height/10
+                padding: dp(20)
+                HeadingLabel:
+                    id: title_add
+                    text: 'Enter The Subject Details'
+                    text_size: root.width - dp(30), None
+                BoxLayout:
+                    Widget:
+                        size_hint_x: 0.2
+                    GridLayout:
+                        size_hint_max:dp(630), dp(700)
+                        cols: 1
+                        spacing: root.height/10
+                        BoxLayout:
+                            size_hint_y: None
+                            height: self.minimum_height
+                            Widget:
+                                size_hint_x: 0.1
+                                size_hint_y: None
+                                height: 0
+                            BoxLayout:
+                                canvas.before:
+                                    Color:
+                                        rgba: RGBA(app.theme['tile_grid'])
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                                orientation: 'vertical' 
+                                spacing: dp(15)
+                                size_hint_y: None
+                                padding: dp(10)
+                                height: dp(325)
+                                CustomTextInput:
+                                    id: subject_name
+                                    hint_text: 'Subject Name'
+                                    size_hint_max_y: dp(50)
+                                CustomTextInput:
+                                    id: sub_code
+                                    hint_text: 'Subject Code'
+                                    size_hint_max_y: dp(50)
+                                BoxLayout:
+                                    size_hint_max_y: dp(50)
+                                    CheckBox:
+                                        id: theory
+                                        active: not lab.active
+                                        enabled: self.active
+                                        color: RGBA(app.theme['main_fonts'])
+                                    Label:
+                                        text: 'Theory'
+                                        font_size: sp(17)
+                                        color: RGBA(app.theme['main_fonts'])
+                                BoxLayout:
+                                    size_hint_max_y: dp(50)
+                                    CheckBox:
+                                        id: lab
+                                        active: not theory.active
+                                        enabled: self.active
+                                        color: RGBA(app.theme['main_fonts'])
+                                    Label:
+                                        text: 'Lab'
+                                        font_size: sp(17)
+                                        color: RGBA(app.theme['main_fonts'])
+                                CustomTextInput:
+                                    id: venue
+                                    hint_text: 'Academic Building'
+                                    size_hint_max_y: dp(50)
+                            Widget:
+                                size_hint_x: 0.1
+                                size_hint_y: None
+                                height: 0
+                        BoxLayout:
+                            orientation: 'vertical'
+                            CustomButton:
+                                text: 'Next'
+                                size_hint_max_y: dp(40)
+                                size_hint_x: 0.45
+                                pos_hint: {'center_x': 0.5}
+                                on_release: root.next()
+                            Widget:
+                                size_hint_y: 0.1
+                    Widget:
+                        size_hint_x: 0.2
+        
+        Screen:
+            name: 'SlotScreen'
+            BoxLayout:
+                orientation: 'vertical'
+                padding: dp(10)
+                spacing: root.height/10
+                BoxLayout:
+                    orientation: 'vertical'
+                    spacing: dp(10)
+                    HeadingLabel:
+                        id: add_slot
+                        text: "Choose the Subject's Slot"
+                        text_size: root.width - dp(30), None
+                    TileLabel:
+                        size_hint_max_y: dp(80)
+                        text: 'Click on the slots your subject occupies from the following list.'
+                        text_size: root.width - dp(10), None
+                        font_size: sp(20)
+                        halign: 'center'
+                    BoxLayout:
+                        size_hint_max_y: dp(80)
+                        spacing: dp(20)
+                        Label:
+                            text: 'Chosen Slot is: '
+                            font_size: sp(20)
+                            text_size: self.width, None
+                            size_hint_x: None
+                            width: dp(200)
+                            halign: 'center'
+                            valign: 'center'
+                            color: RGBA(app.theme['main_fonts'])
+                        TileLabel:
+                            text: 'Example: A1+TA1 or L11+L12'
+                            text_size: self.width - dp(20), None
+                            font_size: sp(20)
+                            halign: 'center'
+                            valign: 'center'
+                BoxLayout:
+                    RecycleView:
+                        id: rv
+                        viewclass: 'SlotButton'
+                        data: root.slot_data
+                        RecycleGridLayout:
+                            canvas.before:
+                                Color:
+                                    rgba: RGBA(app.theme['tile_grid'])
+                                Rectangle:
+                                    size: self.size
+                                    pos: self.pos
+                            cols: 5
+                            padding: dp(20)
+                            spacing: dp(50)
+                            size_hint: 1, None
+                            #width: self.minimum_width
+                            default_size: None, dp(60)
+                            default_size_hint: 1, None
+                            height: self.minimum_height
+                    
+                
+<MainScreen>:
+    name: 'main'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(10)
+        spacing: dp(20)
+        BoxLayout:
+            canvas.before:
+                Color:
+                    rgba: RGBA(app.theme['tile_grid'])
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            orientation: 'vertical'
+            size_hint_y: None
+            height: dp(100)
+            padding: dp(20)
+            spacing: dp(10)
+            Label:
+                font_size: dp(25)
+                font_name: 'Fonts/title.ttf'
+                text: 'Time Table'
+                color: RGBA(app.theme['main_fonts'])
+            Label:
+                canvas.before:
+                    Color:
+                        rgba:RGBA(app.theme['tile_label'])
+                    RoundedRectangle:
+                        size: self.size
+                        pos: self.pos
+                        radius: dp(5),dp(5),dp(5),dp(5)
+                size_hint_x: None
+                width: self.texture_size[0] + self.texture_size[0]*0.1
+                pos_hint: {'center_x': 0.5}
+                text: app.time
+                font_size: dp(20)
+                color: RGBA(app.theme['secondary_color'])
+        BoxLayout:
+            canvas.before:
+                Color:
+                    rgba:RGBA(app.theme['tile_grid'])
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            size_hint_x: 0.7 if app.plat != 'android' else 0.8
+            size_hint_min_x: dp(200)
+            size_hint_max_x: dp(400)
+            pos_hint: {'center_x': 0.5}
+            RecycleView:
+                data: root.data
+                viewclass: 'Tile'
+                RecycleGridLayout:
+                    canvas.before:
+                        Color:
+                            rgba:RGBA(app.theme['tile_grid'])
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
+                    spacing: dp(20)
+                    default_size: None, dp(150)
+                    default_size_hint: 0.5, None
+                    cols: 1
+                    padding: dp(10)
+                    size_hint: 1, None
+                    height: self.minimum_height
+        BoxLayout:
+            canvas.before:
+                Color:
+                    rgba:RGBA(app.theme['tile_grid'])
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            size_hint_y: None
+            height: dp(50)
+            padding: dp(10)
+            spacing: dp(50)
+            CustomButton:
+                id: add
+                text: 'Add a subject'
+                on_release: root.add_subject()
+            CustomButton:
+                id: weekly
+                text: 'Weekly'
+            CustomButton:
+                id: settings
+                text: 'Settings'
+                    
