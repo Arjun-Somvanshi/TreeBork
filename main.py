@@ -236,13 +236,9 @@ class UserInput(Screen):
                     if slot not in temp_theory_slot_list:
                         temp_theory_slot_list.append(slot)
             # for the lab slots too, cause we gotta add them to the json file
-            print(self.lab_slots)
             for key in self.lab_slots:
-                print('This is a key: ', key)
                 for slot in self.lab_slots[key]:
-                    print('This is a slot: ', slot)
                     temp_lab_slot_list.append(slot)
-
             temp_theory_slot_list.sort() # sorting the list
 
             if self.ids.theory.enabled:

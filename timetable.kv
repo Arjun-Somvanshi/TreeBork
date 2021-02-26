@@ -301,6 +301,12 @@ Screen_Manager:
                 padding: dp(10)
                 spacing: root.height/10
                 BoxLayout:
+                	canvas.before:
+                		Color:
+                			rgba: (1, 0, 1, 1)
+                		Rectangle:
+                			size: self.size
+                			pos: self.pos
                     orientation: 'vertical'
                     spacing: dp(10)
                     HeadingLabel:
@@ -308,18 +314,20 @@ Screen_Manager:
                         text: "Choose the Subject's Slot"
                         text_size: root.width - dp(30), None
                     TileLabel:
-                        size_hint_max_y: dp(80)
                         text: 'Click on the slots your subject occupies from the following list.'
                         text_size: root.width - dp(10), None
+                        size_hint_y: None
+                        height: self.texture_size[1] + dp(50)
                         font_size: sp(20)
                         halign: 'center'
                     BoxLayout:
-                        size_hint_max_y: dp(80)
                         spacing: dp(20)
                         Label:
                             text: 'Chosen Slot is: '
                             font_size: sp(20)
                             text_size: self.width, None
+                            size_hint_y: None
+                            height: self.texture_size[1] + dp(50)
                             size_hint_x: None
                             width: dp(200)
                             halign: 'center'
@@ -328,10 +336,29 @@ Screen_Manager:
                         TileLabel:
                             text: 'Example: A1+TA1 or L11+L12'
                             text_size: self.width - dp(20), None
+                            size_hint_y: None
+                            height: self.texture_size[1] + dp(50)
                             font_size: sp(20)
                             halign: 'center'
                             valign: 'center'
+                    Widget:
+                    	canvas.before:
+                    		Color:
+                    			rgba: (1,0,0,1)
+                    		Rectangle:
+                    			size: self.size
+                    			pos: self.pos
+                    	size_hint_y: 0.1
+
                 BoxLayout:
+                    canvas.before:
+                        Color:
+                            rgba: RGBA(app.theme['tile_background'])
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    orientation: 'vertical'
+                    padding: dp(10)
                     RecycleView:
                         id: rv
                         viewclass: 'SlotButton'
@@ -345,13 +372,12 @@ Screen_Manager:
                                     pos: self.pos
                             cols: 5
                             padding: dp(20)
-                            spacing: dp(50)
+                            spacing: dp(30)
                             size_hint: 1, None
                             #width: self.minimum_width
                             default_size: None, dp(60)
                             default_size_hint: 1, None
                             height: self.minimum_height
-                    
                 
 <MainScreen>:
     name: 'main'
