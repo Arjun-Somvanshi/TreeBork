@@ -1,5 +1,5 @@
 #: import RGBA kivy.utils.rgba 
-
+#: import SlideTransition kivy.uix.screenmanager.SlideTransition
 Screen_Manager:
     UserInput: 
     MainScreen:
@@ -154,8 +154,6 @@ Screen_Manager:
                     id: title_question
                     text: 'Are you wanting to make a schedule for VIT or another Institute?'
                     text_size: root.width - dp(30), None
-                    
-                    
                 BoxLayout:
                     padding: dp(50)
                     orientation: 'vertical'
@@ -215,7 +213,7 @@ Screen_Manager:
                 padding: dp(20)
                 HeadingLabel:
                     id: title_add
-                    text: 'Enter The Subject Details'
+                    text: 'Enter The Subject Details' 
                     text_size: root.width - dp(30), None
                 BoxLayout:
                     Widget:
@@ -281,103 +279,126 @@ Screen_Manager:
                                 size_hint_x: 0.1
                                 size_hint_y: None
                                 height: 0
-                        BoxLayout:
-                            orientation: 'vertical'
-                            CustomButton:
-                                text: 'Next'
-                                size_hint_max_y: dp(40)
-                                size_hint_x: 0.45
-                                pos_hint: {'center_x': 0.5}
-                                on_release: root.next()
-                            Widget:
-                                size_hint_y: 0.1
                     Widget:
                         size_hint_x: 0.2
+                BoxLayout:
+                    orientation: 'vertical'
+                    BoxLayout:
+                        size_hint_y: None
+                        height: dp(50)
+                        padding: dp(5)
+                        Widget:
+                            size_hint_x: 0.1
+                        CustomButton:
+                            size_hint_max_x: dp(450)
+                            text: 'Back'
+                        Widget:
+                            size_hint_x: None
+                            width: dp(50)
+                        CustomButton:
+                            size_hint_max_x: dp(450)
+                            text: 'Next'
+                            on_release: root.next()
+                        Widget:
+                            size_hint_x: 0.1
         
         Screen:
             name: 'SlotScreen'
+            id: slot_screen
             BoxLayout:
                 orientation: 'vertical'
-                padding: dp(10)
                 spacing: root.height/10
+                padding: dp(20)
                 BoxLayout:
-                	canvas.before:
-                		Color:
-                			rgba: (1, 0, 1, 1)
-                		Rectangle:
-                			size: self.size
-                			pos: self.pos
                     orientation: 'vertical'
                     spacing: dp(10)
                     HeadingLabel:
-                        id: add_slot
-                        text: "Choose the Subject's Slot"
+                        text: "Choose the Subject's Slots"
                         text_size: root.width - dp(30), None
-                    TileLabel:
-                        text: 'Click on the slots your subject occupies from the following list.'
-                        text_size: root.width - dp(10), None
-                        size_hint_y: None
-                        height: self.texture_size[1] + dp(50)
-                        font_size: sp(20)
-                        halign: 'center'
                     BoxLayout:
-                        spacing: dp(20)
-                        Label:
-                            text: 'Chosen Slot is: '
-                            font_size: sp(20)
-                            text_size: self.width, None
-                            size_hint_y: None
-                            height: self.texture_size[1] + dp(50)
-                            size_hint_x: None
-                            width: dp(200)
-                            halign: 'center'
-                            valign: 'center'
-                            color: RGBA(app.theme['main_fonts'])
+                        orientation: 'vertical'
+                        spacing: dp(15)
+                        size_hint_y: None
+                        height: self.minimum_height
                         TileLabel:
-                            text: 'Example: A1+TA1 or L11+L12'
-                            text_size: self.width - dp(20), None
+                            id: description
+                            text: 'Enter the slot occupied by this subject from the following list.'
                             size_hint_y: None
-                            height: self.texture_size[1] + dp(50)
-                            font_size: sp(20)
+                            height: dp(60)
+                            padding: dp(5), dp(5)
+                            font_size: sp(18)
+                            pos_hint: {'center_x': 0.5}
+                            text_size: self.width, None
+                            size_hint_x: None
+                            width: root.width/1.5 if root.width/1.5<dp(650) else dp(650)
                             halign: 'center'
-                            valign: 'center'
-                    Widget:
-                    	canvas.before:
-                    		Color:
-                    			rgba: (1,0,0,1)
-                    		Rectangle:
-                    			size: self.size
-                    			pos: self.pos
-                    	size_hint_y: 0.1
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(60)
+                            padding: dp(10), 0
+                            Widget:
+                            Label:
+                                text: 'Chosen Slot is:'
+                                size_hint_x: None
+                                width: description.width/2
+                                color: RGBA(app.theme['main_fonts'])
+                                font_size: sp(18)
+                            TileLabel:
+                                text: 'Example: A1+TA1 or L3+L4'
+                                size_hint_x: None
+                                width: description.width/2
+                                text_size: self.width, None
+                                halign: 'center'
+                            Widget:
 
-                BoxLayout:
-                    canvas.before:
-                        Color:
-                            rgba: RGBA(app.theme['tile_background'])
-                        Rectangle:
-                            pos: self.pos
-                            size: self.size
-                    orientation: 'vertical'
-                    padding: dp(10)
-                    RecycleView:
-                        id: rv
-                        viewclass: 'SlotButton'
-                        data: root.slot_data
-                        RecycleGridLayout:
-                            canvas.before:
-                                Color:
-                                    rgba: RGBA(app.theme['tile_grid'])
-                                Rectangle:
-                                    size: self.size
-                                    pos: self.pos
-                            cols: 5
-                            padding: dp(20)
-                            spacing: dp(30)
-                            size_hint: 1, None
-                            #width: self.minimum_width
-                            default_size: None, dp(60)
-                            default_size_hint: 1, None
-                            height: self.minimum_height
+                    BoxLayout:
+                        padding: dp(25)
+                        canvas.before:
+                            Color:
+                                rgba:RGBA(app.theme['tile_background'])
+                            Rectangle:
+                                size: self.size
+                                pos: self.pos
+                        RecycleView:
+                            id: rv
+                            viewclass: 'SlotButton'
+                            data: root.slot_data
+                            RecycleGridLayout:
+                                canvas.before:
+                                    Color:
+                                        rgba: RGBA(app.theme['tile_grid'])
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                                cols: 5
+                                padding: dp(20)
+                                spacing: dp(30)
+                                size_hint: 1, None
+                                #width: self.minimum_width
+                                default_size: None, dp(60)
+                                default_size_hint: 1, None
+                                height: self.minimum_height
+                    BoxLayout:
+                        size_hint_y: None
+                        height: dp(50)
+                        padding: dp(5)
+                        Widget:
+                            size_hint_x: 0.1
+                        CustomButton:
+                            size_hint_max_x: dp(450)
+                            text: 'Back'
+                            on_release: 
+                                slot_screen.manager.transition = SlideTransition(direction = 'right')
+                                slot_screen.manager.current = 'AddSubject'
+                        Widget:
+                            size_hint_x: None
+                            height: dp(50)
+                        CustomButton:
+                            size_hint_max_x: dp(450)
+                            text: 'Add'
+                        Widget:
+                            size_hint_x: 0.1
+                    
                 
 <MainScreen>:
     name: 'main'
@@ -400,7 +421,7 @@ Screen_Manager:
             Label:
                 font_size: dp(25)
                 font_name: 'Fonts/title.ttf'
-                text: 'Time Table'
+                text: 'TreeBork'
                 color: RGBA(app.theme['main_fonts'])
             Label:
                 canvas.before:

@@ -1,0 +1,19 @@
+RecycleView:
+                        id: rv
+                        viewclass: 'SlotButton'
+                        data: root.slot_data
+                        RecycleGridLayout:
+                            canvas.before:
+                                Color:
+                                    rgba: RGBA(app.theme['tile_grid'])
+                                Rectangle:
+                                    size: self.size
+                                    pos: self.pos
+                            cols: 5
+                            padding: dp(20)
+                            spacing: dp(30)
+                            size_hint: 1, None
+                            #width: self.minimum_width
+                            default_size: None, dp(60)
+                            default_size_hint: 1, None
+                            height: self.minimum_height

@@ -19,7 +19,7 @@ import os
 
 app = None
 
-if platform != 'android':
+if platform != 'android' and 1==0:
     Window.minimum_width = dp(500)  
     Window.minimum_height = dp(600)
 
@@ -220,6 +220,8 @@ class UserInput(Screen):
 
     def next(self):
         '''To make available slots visible to the user while adding a new subject'''
+        #clearing slot_data before making anychanges at all
+        self.slot_data = []
         # checking if this is the first subject to be added
         if os.path.isfile("slots.json"):
             self.first_added_subject = False
