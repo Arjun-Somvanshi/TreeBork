@@ -11,6 +11,8 @@ Screen_Manager:
     foreground_color: RGBA(app.theme['secondary_color'])
     font_size: sp(16)
     size_hint_max_x: dp(400)
+    write_tab: False
+    multiline: False
 <CustomButton@Button>:
     background_color: RGBA(app.theme['button']) if self.state == 'normal' else RGBA(app.theme['buttondown'])
     background_normal: ''
@@ -239,16 +241,25 @@ Screen_Manager:
                                 orientation: 'vertical' 
                                 spacing: dp(15)
                                 size_hint_y: None
-                                padding: dp(10)
+                                padding: dp(10), dp(10), dp(10), dp(40)
                                 height: dp(325)
+                                Label:
+                                    id: success
+                                    text: ''
+                                    size_hint_y: None
+                                    height: dp(30)
+                                    font_size: dp(18)
+                                    color: RGBA(app.theme['main_fonts'])
                                 CustomTextInput:
                                     id: subject_name
                                     hint_text: 'Subject Name'
-                                    size_hint_max_y: dp(50)
+                                    size_hint_y: None
+                                    height: dp(44)
                                 CustomTextInput:
                                     id: sub_code
                                     hint_text: 'Subject Code'
-                                    size_hint_max_y: dp(50)
+                                    size_hint_y: None
+                                    height: dp(44)
                                 BoxLayout:
                                     size_hint_max_y: dp(50)
                                     CheckBox:
@@ -274,7 +285,8 @@ Screen_Manager:
                                 CustomTextInput:
                                     id: venue
                                     hint_text: 'Academic Building'
-                                    size_hint_max_y: dp(50)
+                                    size_hint_y: None
+                                    height: dp(44)
                             Widget:
                                 size_hint_x: 0.1
                                 size_hint_y: None
@@ -292,6 +304,10 @@ Screen_Manager:
                         CustomButton:
                             size_hint_max_x: dp(450)
                             text: 'Back'
+                            on_release:
+                                app.root.transition = SlideTransition(direction = 'left')
+                                app.root.current = 'main'
+                                root.refresh()
                         Widget:
                             size_hint_x: None
                             width: dp(50)
@@ -311,46 +327,58 @@ Screen_Manager:
                 padding: dp(20)
                 BoxLayout:
                     orientation: 'vertical'
-                    spacing: dp(10)
+                    spacing: dp(30)
                     HeadingLabel:
                         text: "Choose the Subject's Slots"
                         text_size: root.width - dp(30), None
                     BoxLayout:
                         orientation: 'vertical'
-                        spacing: dp(15)
+                        spacing: dp(10)
                         size_hint_y: None
                         height: self.minimum_height
-                        TileLabel:
-                            id: description
-                            text: 'Enter the slot occupied by this subject from the following list.'
+                        BoxLayout:
+                            orientation: 'vertical'
+                            spacing: dp(15)
                             size_hint_y: None
-                            height: dp(60)
-                            padding: dp(5), dp(5)
-                            font_size: sp(18)
-                            pos_hint: {'center_x': 0.5}
-                            text_size: self.width, None
-                            size_hint_x: None
-                            width: root.width/1.5 if root.width/1.5<dp(650) else dp(650)
-                            halign: 'center'
+                            height: self.minimum_height
+                            BoxLayout:
+                                size_hint_y: None
+                                height: dp(60)
+                                padding: dp(30), 0
+                                Label:
+                                    text: 'Chosen Slot is:'
+                                    color: RGBA(app.theme['main_fonts'])
+                                    font_size: sp(18)
+                                Widget:
+                                    size_hint_x: None
+                                    width: dp(15)
+                                TileLabel:
+                                    id: chosen_slot
+                                    text: 'Example: A1+TA1 or L3+L4'
+                                    padding: dp(5), 0
+                                    text_size: self.width, None
+                                    halign: 'center'
                         BoxLayout:
                             size_hint_y: None
-                            height: dp(60)
-                            padding: dp(10), 0
+                            height: self.minimum_height
+                            padding: dp(25), 0
                             Widget:
-                            Label:
-                                text: 'Chosen Slot is:'
-                                size_hint_x: None
-                                width: description.width/2
-                                color: RGBA(app.theme['main_fonts'])
-                                font_size: sp(18)
-                            TileLabel:
-                                text: 'Example: A1+TA1 or L3+L4'
-                                size_hint_x: None
-                                width: description.width/2
-                                text_size: self.width, None
-                                halign: 'center'
+                            CustomButton:
+                                text: 'Clear'
+                                size_hint_max_x: dp(450)
+                                size_hint_y: None
+                                height: dp(30)
+                                on_release: root.clear()
                             Widget:
-
+                                size_hint_x: None
+                                width: dp(20)
+                            CustomButton:
+                                text: 'Clear All'
+                                size_hint_max_x: dp(450)
+                                size_hint_y: None
+                                height: dp(30)
+                                on_release: root.clear_all()
+                            Widget:
                     BoxLayout:
                         padding: dp(25)
                         canvas.before:
@@ -396,6 +424,7 @@ Screen_Manager:
                         CustomButton:
                             size_hint_max_x: dp(450)
                             text: 'Add'
+                            on_release: root.add_subject()
                         Widget:
                             size_hint_x: 0.1
                     

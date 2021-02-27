@@ -19,9 +19,25 @@ import os
 
 app = None
 
-if platform != 'android' and 1==0:
+if platform != 'android':
     Window.minimum_width = dp(500)  
     Window.minimum_height = dp(600)
+
+def quick_message(title, message):
+    design = QuickMessage()
+    design.ids.title.text = title
+    design.ids.message.text = message
+    error_dialogue = CustomModalView(
+                                        size_hint = (0.35, 0.2),
+                                        size_hint_max = (dp(400), dp(300)),
+                                        size_hint_min = (dp(250), dp(200)),
+                                        auto_dismiss = False,
+                                        opacity = 0,
+                                        overlay_color = (0,0,0,0.5)
+    )
+    error_dialogue.add_widget(design)
+    error_dialogue.open({'center_x': 0.5, 'center_y': 2}, {'center_x': 0.5, 'center_y': 0.5}, 'out_expo')
+    design.ids.close.bind(on_release = partial(error_dialogue.dismiss, {'center_x': 2, 'center_y': 0.5}, 'in_expo', 0.5, 0.75, True))
 
 class CustomModalView(ModalView): # here I have made a custom modal view so that it can handle animations 
                                   # instead of typing the whole deal over and over, the open and dismiss are new                  
@@ -62,16 +78,13 @@ class CustomModalView(ModalView): # here I have made a custom modal view so that
 
 class QuickMessage(BoxLayout):
     pass
-
-class Tile(GridLayout):
-    subject_name = StringProperty('')
-    subject_code = StringProperty('')
-    academic_block = StringProperty('')
-    time = StringProperty('')
-    slot = StringProperty('')
     
 class SlotButton(Button):
     slot_text = StringProperty('')
+    def on_release(self):
+        global app
+        UserInput_screen = app.root.get_screen('UserInput')
+        UserInput_screen.add_slot(self.slot_text)
 
 class UserInput(Screen):
     theory_slots = DictProperty({})
@@ -220,54 +233,156 @@ class UserInput(Screen):
 
     def next(self):
         '''To make available slots visible to the user while adding a new subject'''
-        #clearing slot_data before making anychanges at all
-        self.slot_data = []
-        # checking if this is the first subject to be added
-        if os.path.isfile("slots.json"):
-            self.first_added_subject = False
+        if self.ids.subject_name.text != '':
+            #clearing slot_data before making anychanges at all
+            self.slot_data = []
+            # checking if this is the first subject to be added
+            if os.path.isfile("slots.json"):
+                self.first_added_subject = False
 
-        else:
-            self.first_added_subject = True
-        # now we check if this is the first time a subject is being added, and then create the json file and start adding stuff to it
-        if self.first_added_subject:
-            # picking out the unique slots to display here
-            temp_theory_slot_list = [] # this is a preliminary list which is used before adding data to the recycle view
-            temp_lab_slot_list = []
-            for key in self.theory_slots:
-                for slot in self.theory_slots[key]:
-                    if slot not in temp_theory_slot_list:
-                        temp_theory_slot_list.append(slot)
-            # for the lab slots too, cause we gotta add them to the json file
-            for key in self.lab_slots:
-                for slot in self.lab_slots[key]:
-                    temp_lab_slot_list.append(slot)
-            temp_theory_slot_list.sort() # sorting the list
-
-            if self.ids.theory.enabled:
-                temp_slot_list = temp_theory_slot_list# available_slots is a dictionary so beware
             else:
-                temp_slot_list = temp_lab_slot_list
+                self.first_added_subject = True
+            # now we check if this is the first time a subject is being added, and then create the json file and start adding stuff to it
+            if self.first_added_subject:
+                # picking out the unique slots to display here
+                temp_theory_slot_list = [] # this is a preliminary list which is used before adding data to the recycle view
+                temp_lab_slot_list = []
+                for key in self.theory_slots:
+                    for slot in self.theory_slots[key]:
+                        if slot not in temp_theory_slot_list:
+                            temp_theory_slot_list.append(slot)
+                # for the lab slots too, cause we gotta add them to the json file
+                for key in self.lab_slots:
+                    for slot in self.lab_slots[key]:
+                        temp_lab_slot_list.append(slot)
+                temp_theory_slot_list.sort() # sorting the list
 
-            for slot in temp_slot_list:
-                self.slot_data.append({'slot_text': slot})
+                if self.ids.theory.enabled:
+                    temp_slot_list = temp_theory_slot_list# available_slots is a dictionary so beware
+                else:
+                    temp_slot_list = temp_lab_slot_list
 
-            # writing the available slots into json file
-            #with open('slots.json', 'w') as f:
-                #json.dump({'theory_slots': temp_theory_slot_list, 'lab_slots': temp_theory_slot_list}, f)
+                for slot in temp_slot_list:
+                    self.slot_data.append({'slot_text': slot})
+
+                # writing the available slots into json file
+                with open('slots.json', 'w') as f:
+                    json.dump({'theory_slots': temp_theory_slot_list, 'lab_slots': temp_lab_slot_list}, f)
+            else:
+                self.slot_data = []
+                with open('slots.json') as f:
+                    available_slots = json.load(f)
+                    if self.ids.theory.enabled:
+                        loaded_slots = available_slots['theory_slots']
+                    else:
+                        loaded_slots = available_slots['lab_slots']
+                    for slot in loaded_slots:
+                        self.slot_data.append({'slot_text': slot})
+
+                
+            # changing the screen to choose the slot
+            self.ids.user_input_sc_manager.transition = SlideTransition(direction = 'left')
+            self.ids.user_input_sc_manager.current = 'SlotScreen'
         else:
-            with open('slots.json') as f:
-                available_slots = json.load(f)
-                self.slot_data = available_slots
+            quick_message('Subject Name', 'You need to give a subject name.')
+    
+    def add_slot(self, slot_name):
+        if len(self.ids.chosen_slot.text.split('+'))<=6:
+            for button in self.slot_data:
+                if button['slot_text'] == slot_name:
+                    index_to_pop = self.slot_data.index(button)
+                    self.slot_data.pop(index_to_pop)
+            # checkig if this is the first slot to be added
+            if self.ids.chosen_slot.text[:7] == 'Example':
+                self.ids.chosen_slot.text = slot_name 
+            #if not the first slot then it's appended
+            else:
+                self.ids.chosen_slot.text += '+' + slot_name
+        else:
+            quick_message('Slot Error', 'You have added too many slots.')
+    
+    def clear(self):
+        if self.ids.chosen_slot.text != 'Example: A1+TA1 or L3+L4':
+            available_list = []
+            slot_list = self.ids.chosen_slot.text.split('+')
+            re_added_slot = slot_list[-1]
+            slot_list.pop(-1)
+            self.ids.chosen_slot.text = ''
+            for slot in slot_list:
+                if slot_list[-1] != slot:
+                    self.ids.chosen_slot.text+= slot + '+'
+                else:
+                    self.ids.chosen_slot.text += slot 
+            if self.ids.chosen_slot.text == '':
+                self.ids.chosen_slot.text = 'Example: A1+TA1 or L3+L4'
+            for slotbtn in self.slot_data:
+                available_list.append(slotbtn['slot_text'])
+            available_list.append(re_added_slot)
+            # sorting the list after adding the element back to where it belongs
+            if self.ids.theory.enabled:
+                available_list.sort()
+            else:
+                temp_list = []
+                for ele in available_list:
+                    temp_list.append(int(ele[1:]))
+                temp_list.sort()
+                available_list = []
+                for ele in temp_list:
+                    available_list.append('L' + str(ele))
+            self.slot_data = []
+            for slot in available_list:
+                self.slot_data.append({'slot_text':slot})
+    
+    def clear_all(self):
+        for i in self.ids.chosen_slot.text.split('+'):
+            self.clear()
+    
+    def refresh(self):
+        self.ids.subject_name.text = ''
+        self.ids.sub_code.text = ''
+        self.ids.venue.text = ''
+    
+    def success_animation(self, subject_name):
+        self.ids.success.opacity = 0
+        self.ids.success.text = subject_name + ' was added to TreeBork.'
+        anim = Animation(opacity =1, duration=1.5)
+        anim.bind(on_complete = self.remove_success)
+        anim.start(self.ids.success)
 
-            
-        # changing the screen to choose the slot
-        self.ids.user_input_sc_manager.transition = SlideTransition(direction = 'left')
-        self.ids.user_input_sc_manager.current = 'SlotScreen'
+    def remove_success(self, *args):
+        anim = Animation(opacity = 0, duration = 1.5)
+        anim.start(self.ids.success)
+        self.ids.success.text = ''
 
     def add_subject(self):
-        pass
+        if self.ids.chosen_slot.text != 'Example: A1+TA1 or L3+L4':
+            self.ids.chosen_slot.text = 'Example: A1+TA1 or L3+L4'
+            subject_name = self.ids.subject_name.text
+            self.refresh()
+            json_data = []
+            for slotbtn in self.slot_data:
+                json_data.append(slotbtn['slot_text'])
+            with open('slots.json', 'r') as f:
+                previous_data = json.load(f)
+            if self.ids.theory.enabled:
+                with open('slots.json', 'w') as f:
+                    json.dump({'theory_slots': json_data, 'lab_slots': previous_data['lab_slots']}, f)
+            else:
+                with open('slots.json', 'w') as f:
+                    json.dump({'theory_slots': previous_data['theory_slots'], 'lab_slots': json_data}, f)
+            mainscreen = self.manager.get_screen('main')
+            self.ids.user_input_sc_manager.transition = SlideTransition(direction = 'right')
+            self.ids.user_input_sc_manager.current = 'AddSubject'
+            self.success_animation(subject_name)
+        else:
+            quick_message('Empty Slot', 'No slot was chosen.')
         
-
+class Tile(GridLayout):
+    subject_name = StringProperty('')
+    subject_code = StringProperty('')
+    academic_block = StringProperty('')
+    time = StringProperty('')
+    slot = StringProperty('')
 
 class MainScreen(Screen):
     data = []
