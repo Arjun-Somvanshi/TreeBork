@@ -1,0 +1,61 @@
+{
+  "monday": [
+    {
+      "subject_name": "CALCULUS",
+      "subject_code": "MAT1011",
+      "slot": "TB1",
+      "time": "11:00 - 11:50",
+      "venue": "SMV217",
+      "rank": 3
+    }
+  ],
+  "tuesday": [
+    {
+      "subject_name": "CALCULUS",
+      "subject_code": "MAT1011",
+      "slot": "B1",
+      "time": "8:00 - 8:50",
+      "venue": "SMV217",
+      "rank": 0
+    },
+    {
+      "subject_name": "DSA",
+      "subject_code": "ITE1004",
+      "slot": "E1",
+      "time": "10:00 - 10:50",
+      "venue": "SJT208",
+      "rank": 2
+    }
+  ],
+  "wednesday": [],
+  "thursday": [
+    {
+      "subject_name": "CALCULUS",
+      "subject_code": "MAT1011",
+      "slot": "B1",
+      "time": "9:00 - 9:50",
+      "venue": "SMV217",
+      "rank": 1
+    },
+    {
+      "subject_name": "DSA",
+      "subject_code": "ITE1004",
+      "slot": "TE1",
+      "time": "11:00 - 11:50",
+      "venue": "SJT208",
+      "rank": 3
+    }
+  ],
+  "friday": [
+    {
+      "subject_name": "DSA",
+      "subject_code": "ITE1004",
+      "slot": "E1",
+      "time": "8:00 - 8:50",
+      "venue": "SJT208",
+      "rank": 0
+    }
+  ],
+  "saturday": [],
+  "sunday": []
+}

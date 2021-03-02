@@ -1,11 +1,13 @@
 from kivy.app import App
 from kivy.config import Config
+Config.set('graphics', 'width', '600')
+Config.set('graphics', 'height', '750')
 from kivy.uix.screenmanager import Screen, ScreenManager, NoTransition, SlideTransition
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.modalview import ModalView
 from kivy.uix.button import Button
-from kivy.properties import StringProperty, ListProperty, DictProperty
+from kivy.properties import StringProperty, ListProperty, DictProperty, BooleanProperty
 from kivy.utils import rgba as RGBA
 from kivy.core.window import Window
 from kivy.metrics import dp, sp
@@ -169,6 +171,7 @@ class UserInput(Screen):
             self.ids.user_input_sc_manager.current = 'AddSubject'
     
     def set_schedule_type(self):
+        print('setting the schedule')
         global app
         if self.ids.vit.enabled:
             self.schedule_type = 'VIT'
@@ -178,8 +181,9 @@ class UserInput(Screen):
             f.write(self.schedule_type)
         self.ids.user_input_sc_manager.transition = SlideTransition(direction = 'left')
         self.ids.user_input_sc_manager.current = 'AddSubject'
-        #initiating the tutorial
-        #Clock.schedule_once(partial(self.tutorial, 1), 0.5)
+        # this is a flag to define if this is the first time the app is being used or not 
+        # if it's being used for the first time, the tutorial should initiate
+        self.manager.get_screen('main').first_run = True
         
     def tutorial(self, tutorial_num, *args):
         # Now we bring in the tutorial popups for the explanation of the main screen
@@ -255,7 +259,15 @@ class UserInput(Screen):
                 for key in self.lab_slots:
                     for slot in self.lab_slots[key]:
                         temp_lab_slot_list.append(slot)
+                
                 temp_theory_slot_list.sort() # sorting the list
+                # now sorting the labslots
+                sorted_list = []
+                for ele in temp_lab_slot_list:
+                    sorted_list.append(int(ele[1:]))
+                sorted_list.sort()
+                for i in range(len(temp_lab_slot_list)):
+                    temp_lab_slot_list[i] = 'L' + str(sorted_list[i])
 
                 if self.ids.theory.enabled:
                     temp_slot_list = temp_theory_slot_list# available_slots is a dictionary so beware
@@ -345,23 +357,41 @@ class UserInput(Screen):
     def success_animation(self, subject_name):
         self.ids.success.opacity = 0
         self.ids.success.text = subject_name + ' was added to TreeBork.'
-        anim = Animation(opacity =1, duration=1.5)
+        anim = Animation(opacity =1, duration=2.5)
         anim.bind(on_complete = self.remove_success)
         anim.start(self.ids.success)
 
     def remove_success(self, *args):
-        anim = Animation(opacity = 0, duration = 1.5)
+        anim = Animation(opacity = 0, duration=2.5)
         anim.start(self.ids.success)
-        self.ids.success.text = ''
+        
+
+    def bubble_sort(self, day):
+        for i in range(len(day)):
+            for j in range(len(day)-i-1):
+                if day[j]['rank']>day[j+1]['rank']:
+                    temp = day[j]
+                    day[j] = day[j+1]
+                    day[j+1] = temp
+        return day
 
     def add_subject(self):
+        # adding the subject to the time table in this function
+
         if self.ids.chosen_slot.text != 'Example: A1+TA1 or L3+L4':
-            self.ids.chosen_slot.text = 'Example: A1+TA1 or L3+L4'
+            # save the details
             subject_name = self.ids.subject_name.text
+            subject_code = self.ids.sub_code.text
+            venue = self.ids.venue.text
+            slot_list = self.ids.chosen_slot.text.split('+')
+            # set the chosen slot back to the hint text
+            self.ids.chosen_slot.text = 'Example: A1+TA1 or L3+L4'
+            # refresh the add subject screen
             self.refresh()
             json_data = []
             for slotbtn in self.slot_data:
                 json_data.append(slotbtn['slot_text'])
+            # changing the available slots after a subject has been added
             with open('slots.json', 'r') as f:
                 previous_data = json.load(f)
             if self.ids.theory.enabled:
@@ -370,7 +400,52 @@ class UserInput(Screen):
             else:
                 with open('slots.json', 'w') as f:
                     json.dump({'theory_slots': previous_data['theory_slots'], 'lab_slots': json_data}, f)
+            
+            # adding it to the time table:
             mainscreen = self.manager.get_screen('main')
+                # checking if the time table exists
+            if os.path.isfile('timetable.json'):
+                self.time_table_exists = True
+            else:
+                self.time_table_exists = False
+            # adding the stuff to the timetable dictionary 
+            if self.ids.theory.enabled:
+                time_table_dictionary = self.theory_slots
+                time_of_slots = self._theory_timings
+            else:
+                time_table_dictionary = self.lab_slots
+                time_of_slots = self._labs_timings
+            
+            for chosen_slot in slot_list:
+                for day in time_table_dictionary:
+                    for slot in time_table_dictionary[day]:
+                        #print('Chosen: ',chosen_slot)
+                        #print('Slot: ',slot)
+                        if chosen_slot == slot:
+                            print('matching slots')
+                            index_of_slot = time_table_dictionary[day].index(slot)
+                            # fetching time
+                            timing = time_of_slots[index_of_slot]
+                            time_as_string = str(timing[0][0]) + ':' + str(timing[0][1])
+                            time_as_string += ' - ' + str(timing[1][0]) + ':' + str(timing[1][1])
+
+                            slot_details = {
+                                                'subject_name': subject_name,
+                                                'subject_code': subject_code,
+                                                'slot': slot,
+                                                'time': time_as_string,
+                                                'venue': venue,
+                                                'rank': index_of_slot,
+                                            }
+                            mainscreen.timetable[day].append(slot_details)
+            for day in mainscreen.timetable:
+                mainscreen.timetable[day] = self.bubble_sort(mainscreen.timetable[day])
+            mainscreen.set_data()
+            print('This is the data: ', mainscreen.data)
+
+            with open('timetable.json', 'w') as f:
+                json.dump(mainscreen.timetable, f, indent = 2)
+            # switching screens back to the addsubject
             self.ids.user_input_sc_manager.transition = SlideTransition(direction = 'right')
             self.ids.user_input_sc_manager.current = 'AddSubject'
             self.success_animation(subject_name)
@@ -385,7 +460,52 @@ class Tile(GridLayout):
     slot = StringProperty('')
 
 class MainScreen(Screen):
-    data = []
+    
+    timetable = DictProperty({'monday':[], 'tuesday':[],'wednesday':[],'thursday':[],'friday':[],'saturday':[], 'sunday':[]})
+    data = ListProperty([])
+    first_run = False
+    
+    def __init__(self, **kwargs):
+        super(MainScreen, self).__init__(**kwargs)
+        if os.path.isfile('timetable.json'):
+            with open('timetable.json', 'r') as f:
+                self.timetable = json.load(f)
+            Clock.schedule_once(self.set_data)
+        
+
+    def set_data(self, *args):
+        # to set the data to the appropriate day
+        print('SET DATA was called')
+        global app
+        today = app.time.split(' ')[0].lower()
+        self.data = []
+        for day in self.timetable:
+            if day[:3] == today:
+                print('setting the data')
+                for slot_details in self.timetable[day]:
+                    print('The data list is appending')
+                    self.data.append({
+                                        'subject_name': slot_details['subject_name'],
+                                        'subject_code': slot_details['subject_code'],
+                                        'slot': slot_details['slot'],
+                                        'time': slot_details['time'],
+                                        'academic_block': slot_details['venue'],
+                                    })
+                break
+        a = 0
+        for btn in self.ids.weekbar.walk(restrict=True):
+            if a != 0:
+                if btn.text.lower() == today:
+                    btn.week = True
+            a+=1
+
+    def on_enter(self):
+        print('Is this the first run?: ', self.first_run)
+        if self.first_run:
+            print('Is this the first run?: ', self.first_run)
+            self.manager.get_screen('UserInput').tutorial(1)
+            self.first_run = False
+            #pass
     def add_subject(self):
         self.manager.transition = SlideTransition(direction= 'right')
         self.manager.current = 'UserInput'
@@ -393,6 +513,30 @@ class MainScreen(Screen):
         UserInput_screen = self.manager.get_screen('UserInput') # getting the UserInput screen
         UserInput_screen.ids.user_input_sc_manager.transition = NoTransition()
         UserInput_screen.ids.user_input_sc_manager.current = 'AddSubject'
+    
+    def show_day(self, text):
+        self.data = []
+        for day in self.timetable:
+            if day[:3] == text.lower():
+                print('New day was found')
+                for slot_details in self.timetable[day]:
+                    print('The data list is appending for the new day')
+                    self.data.append({
+                                        'subject_name': slot_details['subject_name'],
+                                        'subject_code': slot_details['subject_code'],
+                                        'slot': slot_details['slot'],
+                                        'time': slot_details['time'],
+                                        'academic_block': slot_details['venue'],
+                                    })
+                break
+        a = 0
+        for btn in self.ids.weekbar.walk(restrict=True):
+            if a != 0:
+                if btn.text.lower() == text:
+                    btn.week = True
+            else:
+                btn.week = False
+            a+=1
 
 
 class TimeTableScreen(Screen):
@@ -402,23 +546,30 @@ class Screen_Manager(ScreenManager):
     pass
 
 class TimeTableApp(App):
-    tuborg = {'tile_grid': '#1E2E0A', 'tile_background': '#0B2708', 'tile_label': '#385C00', 
+    treebork = {'tile_grid': '#1E2E0A', 'tile_background': '#0B2708', 'tile_label': '#385C00', 
               'cols':'#2A3E04', 'main_fonts': '#f1c40f', 'secondary_color': '#a2d9ce', 
               'button': '#576e12', 'buttondown': '#34420a'}
-    theme = tuborg
+    theme = treebork
     plat = None
     animations = True
     time = StringProperty('')
     def on_start(self):
         self.root.get_screen('UserInput').screen_order()
     def build(self):
+        
         global app
         Window.clearcolor = RGBA(self.theme['cols'])
         self.plat = platform
         app = self
-        Clock.schedule_interval(self.assign_time, 1)
-
-    def assign_time(self, dt):
+        self.assign_time()
+    def set_btn_col(self, ch, btn):
+        if ch==0:
+            btn.background_color = self.theme['buttondown']
+        elif ch == 1:
+            btn.background_color = self.theme['button']
+        elif ch == 2:
+            btn.background_color = self.theme['tile_grid']
+    def assign_time(self, *args):
         self.time = time.asctime(time.localtime(time.time()))
     
 

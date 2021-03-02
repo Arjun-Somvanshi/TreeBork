@@ -14,7 +14,10 @@ Screen_Manager:
     write_tab: False
     multiline: False
 <CustomButton@Button>:
-    background_color: RGBA(app.theme['button']) if self.state == 'normal' else RGBA(app.theme['buttondown'])
+    week: False
+    background_color: RGBA(app.theme['tile_grid']) if self.week == True else RGBA(app.theme['button'])
+    on_press: app.set_btn_col(0, self) if self.week != True else app.set_btn_col(2, self)
+    on_release: app.set_btn_col(2, self) if self.week == True else app.set_btn_col(1, self)
     background_normal: ''
     background_down: ''
     size_hint_max_y: dp(60)
@@ -477,6 +480,47 @@ Screen_Manager:
             size_hint_min_x: dp(200)
             size_hint_max_x: dp(400)
             pos_hint: {'center_x': 0.5}
+            orientation: 'vertical'
+            BoxLayout:
+                size_hint_y: None
+                height: dp(30)
+                spacing: dp(5)
+                id: weekbar
+                CustomButton:
+                    font_size: sp(14)
+                    text: 'Mon'
+                    on_release:
+                        root.show_day(self.text)               
+                CustomButton:
+                    font_size: sp(14)
+                    text: 'Tue'
+                    on_release:
+                        root.show_day(self.text)              
+                CustomButton:
+                    font_size: sp(14)
+                    text: 'Wed'
+                    on_release:
+                        root.show_day(self.text)               
+                CustomButton:
+                    font_size: sp(14)
+                    text: 'Thu'
+                    on_release:
+                        root.show_day(self.text)               
+                CustomButton:
+                    font_size: sp(14)
+                    text: 'Fri'
+                    on_release:
+                        root.show_day(self.text)               
+                CustomButton:
+                    font_size: sp(14)
+                    text: 'Sat'
+                    on_release:
+                        root.show_day(self.text)               
+                CustomButton:
+                    font_size: sp(14)
+                    text: 'Sun'
+                    on_release:
+                        root.show_day(self.text)               
             RecycleView:
                 data: root.data
                 viewclass: 'Tile'
