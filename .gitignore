@@ -1,4 +1,4 @@
-/slots.json
-/timetable.json
-/jsontest.py
-/buttontest.py
+.json
+json*
+buttontest*
+.txt

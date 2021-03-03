@@ -552,10 +552,43 @@ class Screen_Manager(ScreenManager):
     pass
 
 class TimeTableApp(App):
-    treebork = {'tile_grid': '#1E2E0A', 'tile_background': '#0B2708', 'tile_label': '#385C00', 
-              'cols':'#2A3E04', 'main_fonts': '#f1c40f', 'secondary_color': '#a2d9ce', 
-              'button': '#576e12', 'buttondown': '#34420a'}
-    theme = treebork
+    treebork = {'tile_grid': '#1E2E0A', 
+                'tile_background': '#0B2708', 
+                'tile_label': '#385C00', 
+                'cols':'#2A3E04', 
+                'main_fonts': '#f1c40f',
+                'secondary_color': '#a2d9ce', 
+                'button': '#576e12', 
+                'buttondown': '#34420a'}
+    
+    moonsugar = {'tile_grid': '#6A5ACD', 
+                'tile_background': '#483D8B', 
+                'tile_label': '#4169E1', 
+                'cols':'#4B0082', 	 
+                'main_fonts': '#64b5f6', 
+                'secondary_color': '#a2d9ce', 
+                'button': '#2e86c1', 
+                'buttondown': '#5dade2'}
+    
+    acid      = {'tile_grid': '#1E2E0A', 
+                'tile_background': '#0B2708', 
+                'tile_label': '#385C00', 
+                'cols':'#2A3E04', 
+                'main_fonts': '#f1c40f', 
+                'secondary_color': '#a2d9ce', 
+                'button': '#576e12', 
+                'buttondown': '#34420a'}
+    
+    purplehaze = {'tile_grid': '#1E2E0A', 
+                'tile_background': '#0B2708', 
+                'tile_label': '#385C00', 
+                'cols':'#2A3E04', 
+                'main_fonts': '#f1c40f', 
+                'secondary_color': '#a2d9ce', 
+                'button': '#576e12', 
+                'buttondown': '#34420a'}
+
+    theme = moonsugar
     plat = None
     animations = True
     time = StringProperty('')
