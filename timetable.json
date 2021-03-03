@@ -1,254 +1,27 @@
 {
   "monday": [
     {
-      "subject_name": "CAO",
-      "subject_code": "ITE2001",
+      "subject_name": "asdf",
+      "subject_code": "",
       "slot": "A1",
       "time": "8:00 - 8:50",
       "venue": "",
       "rank": 0
-    },
-    {
-      "subject_name": "Theory of Computation",
-      "subject_code": "ITE2001",
-      "slot": "F1",
-      "time": "9:00 - 9:50",
-      "venue": "SJT201",
-      "rank": 1
-    },
-    {
-      "subject_name": "Calculus",
-      "subject_code": "",
-      "slot": "TB1",
-      "time": "11:00 - 11:50",
-      "venue": "",
-      "rank": 3
-    },
-    {
-      "subject_name": "Object Oriented Analysis and Design",
-      "subject_code": "ITE1007",
-      "slot": "TG1",
-      "time": "12:00 - 12:50",
-      "venue": "",
-      "rank": 4
-    },
-    {
-      "subject_name": "Software Testing",
-      "subject_code": "ITE2004",
-      "slot": "A2",
-      "time": "2:00 - 2:50",
-      "venue": "",
-      "rank": 5
-    },
-    {
-      "subject_name": "Data Structures and Algorithms Lab",
-      "subject_code": "",
-      "slot": "L35",
-      "time": "5:31 - 6:15",
-      "venue": "",
-      "rank": 10
-    },
-    {
-      "subject_name": "Data Structures and Algorithms Lab",
-      "subject_code": "",
-      "slot": "L36",
-      "time": "6:16 - 7:00",
-      "venue": "",
-      "rank": 11
     }
   ],
-  "tuesday": [
-    {
-      "subject_name": "Calculus",
-      "subject_code": "",
-      "slot": "B1",
-      "time": "8:00 - 8:50",
-      "venue": "",
-      "rank": 0
-    },
-    {
-      "subject_name": "Object Oriented Analysis and Design",
-      "subject_code": "ITE1007",
-      "slot": "G1",
-      "time": "9:00 - 9:50",
-      "venue": "",
-      "rank": 1
-    },
-    {
-      "subject_name": "DSA",
-      "subject_code": "ITE1004",
-      "slot": "E1",
-      "time": "10:00 - 10:50",
-      "venue": "",
-      "rank": 2
-    },
-    {
-      "subject_name": "Soft Skills",
-      "subject_code": "",
-      "slot": "E2",
-      "time": "4:00 - 4:50",
-      "venue": "",
-      "rank": 7
-    },
-    {
-      "subject_name": "Applied Linear Algebra",
-      "subject_code": "",
-      "slot": "TC2",
-      "time": "5:00 - 5:50",
-      "venue": "",
-      "rank": 8
-    }
-  ],
+  "tuesday": [],
   "wednesday": [
     {
-      "subject_name": "CAO",
-      "subject_code": "ITE2001",
+      "subject_name": "asdf",
+      "subject_code": "",
       "slot": "A1",
       "time": "9:00 - 9:50",
       "venue": "",
       "rank": 1
-    },
-    {
-      "subject_name": "Theory of Computation",
-      "subject_code": "ITE2001",
-      "slot": "F1",
-      "time": "10:00 - 10:50",
-      "venue": "SJT201",
-      "rank": 2
-    },
-    {
-      "subject_name": "Applied Linear Algebra",
-      "subject_code": "",
-      "slot": "C2",
-      "time": "2:00 - 2:50",
-      "venue": "",
-      "rank": 5
-    },
-    {
-      "subject_name": "Software Testing",
-      "subject_code": "ITE2004",
-      "slot": "A2",
-      "time": "3:00 - 3:50",
-      "venue": "",
-      "rank": 6
-    },
-    {
-      "subject_name": "Applied Linear Algebra",
-      "subject_code": "",
-      "slot": "V5",
-      "time": "7:00 - 7:50",
-      "venue": "",
-      "rank": 10
-    },
-    {
-      "subject_name": "Calculus Lab",
-      "subject_code": "",
-      "slot": "L47",
-      "time": "5:31 - 6:15",
-      "venue": "",
-      "rank": 10
-    },
-    {
-      "subject_name": "Calculus Lab",
-      "subject_code": "",
-      "slot": "L48",
-      "time": "6:16 - 7:00",
-      "venue": "",
-      "rank": 11
     }
   ],
-  "thursday": [
-    {
-      "subject_name": "Calculus",
-      "subject_code": "",
-      "slot": "B1",
-      "time": "9:00 - 9:50",
-      "venue": "",
-      "rank": 1
-    },
-    {
-      "subject_name": "Object Oriented Analysis and Design",
-      "subject_code": "ITE1007",
-      "slot": "G1",
-      "time": "10:00 - 10:50",
-      "venue": "",
-      "rank": 2
-    },
-    {
-      "subject_name": "DSA",
-      "subject_code": "ITE1004",
-      "slot": "TE1",
-      "time": "11:00 - 11:50",
-      "venue": "",
-      "rank": 3
-    },
-    {
-      "subject_name": "Soft Skills",
-      "subject_code": "",
-      "slot": "TE2",
-      "time": "5:00 - 5:50",
-      "venue": "",
-      "rank": 8
-    },
-    {
-      "subject_name": "Applied Linear Algebra",
-      "subject_code": "",
-      "slot": "TCC2",
-      "time": "6:00 - 6:50",
-      "venue": "",
-      "rank": 9
-    }
-  ],
-  "friday": [
-    {
-      "subject_name": "DSA",
-      "subject_code": "ITE1004",
-      "slot": "E1",
-      "time": "8:00 - 8:50",
-      "venue": "",
-      "rank": 0
-    },
-    {
-      "subject_name": "CAO",
-      "subject_code": "ITE2001",
-      "slot": "TA1",
-      "time": "10:00 - 10:50",
-      "venue": "",
-      "rank": 2
-    },
-    {
-      "subject_name": "Theory of Computation",
-      "subject_code": "ITE2001",
-      "slot": "TF1",
-      "time": "11:00 - 11:50",
-      "venue": "SJT201",
-      "rank": 3
-    },
-    {
-      "subject_name": "Soft Skills",
-      "subject_code": "",
-      "slot": "E2",
-      "time": "2:00 - 2:50",
-      "venue": "",
-      "rank": 5
-    },
-    {
-      "subject_name": "Applied Linear Algebra",
-      "subject_code": "",
-      "slot": "C2",
-      "time": "3:00 - 3:50",
-      "venue": "",
-      "rank": 6
-    },
-    {
-      "subject_name": "Software Testing",
-      "subject_code": "ITE2004",
-      "slot": "TA2",
-      "time": "4:00 - 4:50",
-      "venue": "",
-      "rank": 7
-    }
-  ],
+  "thursday": [],
+  "friday": [],
   "saturday": [],
   "sunday": []
 }
