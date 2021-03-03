@@ -532,10 +532,13 @@ class MainScreen(Screen):
         a = 0
         for btn in self.ids.weekbar.walk(restrict=True):
             if a != 0:
-                if btn.text.lower() == text:
+               #print('Object from the weekbar: ', type(btn))
+               #print('btn text and the text parameter: ', btn.text.lower(), text)
+                if btn.text.lower() == text.lower():
+                    print('the btn week was changed to true from show day')
                     btn.week = True
-            else:
-                btn.week = False
+                else:
+                    btn.week = False
             a+=1
 
 
