@@ -561,34 +561,34 @@ class TimeTableApp(App):
                 'button': '#576e12', 
                 'buttondown': '#34420a'}
     
-    moonsugar = {'tile_grid': '#6A5ACD', 
-                'tile_background': '#483D8B', 
-                'tile_label': '#4169E1', 
-                'cols':'#4B0082', 	 
-                'main_fonts': '#64b5f6', 
-                'secondary_color': '#a2d9ce', 
+    moonsugar = {'tile_grid': '#1a5276', 
+                'tile_background': '#154360', 
+                'tile_label': '#2471a3', 
+                'cols':'#154360', 	 
+                'main_fonts': '#bb8fce', 
+                'secondary_color': '#c5cae9', 
                 'button': '#2e86c1', 
                 'buttondown': '#5dade2'}
     
-    acid      = {'tile_grid': '#1E2E0A', 
-                'tile_background': '#0B2708', 
-                'tile_label': '#385C00', 
-                'cols':'#2A3E04', 
-                'main_fonts': '#f1c40f', 
+    xacid      = {'tile_grid': '#1c2833', 
+                'tile_background': '#273746', 
+                'tile_label': '#34495e', 
+                'cols':'#17202a', 
+                'main_fonts': '#00acc1', 
                 'secondary_color': '#a2d9ce', 
-                'button': '#576e12', 
-                'buttondown': '#34420a'}
+                'button': '#566573', 
+                'buttondown': '#5d6d7e'}
     
-    purplehaze = {'tile_grid': '#1E2E0A', 
-                'tile_background': '#0B2708', 
-                'tile_label': '#385C00', 
-                'cols':'#2A3E04', 
-                'main_fonts': '#f1c40f', 
-                'secondary_color': '#a2d9ce', 
-                'button': '#576e12', 
-                'buttondown': '#34420a'}
+    carlburo = {'tile_grid': '#F9F9F9', 
+                'tile_background': '#A50503', 
+                'tile_label': '#F9F9F9', 
+                'cols':'#A50503', 
+                'main_fonts': '#131618', 
+                'secondary_color': '#A50503', 
+                'button': '#F9F9F9', 
+                'buttondown': '#D9D9D9'}
 
-    theme = moonsugar
+    theme = treebork
     plat = None
     animations = True
     time = StringProperty('')
