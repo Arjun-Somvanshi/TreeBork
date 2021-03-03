@@ -9,6 +9,14 @@
       "rank": 0
     },
     {
+      "subject_name": "Theory of Computation",
+      "subject_code": "ITE2001",
+      "slot": "F1",
+      "time": "9:00 - 9:50",
+      "venue": "SJT201",
+      "rank": 1
+    },
+    {
       "subject_name": "Calculus",
       "subject_code": "",
       "slot": "TB1",
@@ -101,6 +109,14 @@
       "rank": 1
     },
     {
+      "subject_name": "Theory of Computation",
+      "subject_code": "ITE2001",
+      "slot": "F1",
+      "time": "10:00 - 10:50",
+      "venue": "SJT201",
+      "rank": 2
+    },
+    {
       "subject_name": "Applied Linear Algebra",
       "subject_code": "",
       "slot": "C2",
@@ -123,6 +139,22 @@
       "time": "7:00 - 7:50",
       "venue": "",
       "rank": 10
+    },
+    {
+      "subject_name": "Calculus Lab",
+      "subject_code": "",
+      "slot": "L47",
+      "time": "5:31 - 6:15",
+      "venue": "",
+      "rank": 10
+    },
+    {
+      "subject_name": "Calculus Lab",
+      "subject_code": "",
+      "slot": "L48",
+      "time": "6:16 - 7:00",
+      "venue": "",
+      "rank": 11
     }
   ],
   "thursday": [
@@ -183,6 +215,14 @@
       "time": "10:00 - 10:50",
       "venue": "",
       "rank": 2
+    },
+    {
+      "subject_name": "Theory of Computation",
+      "subject_code": "ITE2001",
+      "slot": "TF1",
+      "time": "11:00 - 11:50",
+      "venue": "SJT201",
+      "rank": 3
     },
     {
       "subject_name": "Soft Skills",
