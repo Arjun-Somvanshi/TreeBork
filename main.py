@@ -123,7 +123,7 @@ class UserInput(Screen):
         self.lab_slots = {
                                 'monday': ['L'+str(x) for x in range(1,7)]+['L'+str(y) for y in range(31,37)], 
 
-                                'tuesday': ['L'+str(x) for x in range(7,13)]+['L'+str(y) for y in range(42,43)],
+                                'tuesday': ['L'+str(x) for x in range(7,13)]+['L'+str(y) for y in range(37,43)],
 
                                 'wednesday': ['L'+str(x) for x in range(13,19)]+['L'+str(y) for y in range(43,49)],
                                 
@@ -544,6 +544,12 @@ class MainScreen(Screen):
                     btn.week = False
             a+=1
 
+class CustomizeScreen(Screen):
+    subject_list = ListProperty([])
+    def on_enter(self):
+        with open('slots.json', 'r') as f:
+            subject_data = json.load(f)
+        
 
 class TimeTableScreen(Screen):
     pass
@@ -600,7 +606,7 @@ class TimeTableApp(App):
         Window.clearcolor = RGBA(self.theme['cols'])
         self.plat = platform
         app = self
-        self.assign_time()
+        Clock.schedule_interval(self.assign_time, 0.5)
     def set_btn_col(self, ch, btn):
         if ch==0:
             btn.background_color = self.theme['buttondown']

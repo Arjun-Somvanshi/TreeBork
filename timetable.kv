@@ -4,6 +4,7 @@ Screen_Manager:
     UserInput: 
     MainScreen:
     TimeTableScreen:
+    CustomizeScreen:
 
 <CustomTextInput@TextInput>:
     background_color: RGBA(app.theme['tile_label'])
@@ -558,5 +559,19 @@ Screen_Manager:
                 text: 'Weekly'
             CustomButton:
                 id: settings
-                text: 'Settings'
-                    
+                text: 'Edit/Remove'
+<CustomizeScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        TileLabel:
+            text: 'Edit/Remove Subjects' 
+        BoxLayout:
+            RecycleView:
+                viewclass: 'CustomButton'
+                data: root.subject_list
+                RecycleBoxLayout:
+                    orientation: 'vertical'
+                    default_size_hint: (1, None)
+                    default_size: (None, dp(60))
+                    size_hint_y: None
+                    height: self.minimum_height
