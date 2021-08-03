@@ -7,8 +7,8 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.modalview import ModalView
 from kivy.uix.button import Button
-from kivy.properties import StringProperty, ListProperty, DictProperty, BooleanProperty
-from kivy.utils import rgba as RGBA
+from kivy.properties import StringProperty, ListProperty, DictProperty, BooleanProperty, NumericProperty
+from kivy.utils import get_color_from_hex
 from kivy.core.window import Window
 from kivy.metrics import dp, sp
 from kivy.clock import Clock
@@ -50,12 +50,14 @@ class CustomModalView(ModalView): # here I have made a custom modal view so that
         if animate and app.animations: # we have to parameters to decide whether animation should occur or
         # not, incase, the user decides to not use animations on slow hardware, app.animations will be set to false, 
         # if the developer doen't wanna use the animation then he/she can set animate to false
+            print('line 53: Inside the open function')
             self.disabled = True
             self.pos_hint = pos_hint_initial
             anim = Animation(pos_hint = pos_hint_final, t = t, duration = d1)
             anim &= Animation(opacity = 1, t=t, duration=d2)
             anim.start(self)
             anim.bind(on_complete=self.enable_popup)
+            print('line 60 open executed')
         else: 
             self.opacity = 1
             self.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
@@ -203,7 +205,7 @@ class UserInput(Screen):
             pos_initial = {'x': 0.05, 'y': 2}
             pos_final =   {'x': 0.05, 'y': 0.15}
             content.ids.close.bind(on_release = partial(tut1.dismiss, {'x': 2, 'y': 0.15}, 'in_quart', 0.5, 0.75, True ))
-        
+
         elif tutorial_num == 2:
             content.ids.title.text = 'Tutorial Message 2'
             content.ids.message.text = "To check up the weekly schedule click on 'Weekly'."
@@ -219,19 +221,18 @@ class UserInput(Screen):
             content.ids.close.bind(on_release = partial(tut1.dismiss, {'right': 4, 'y':0.15}, 'in_quart', 0.5, 0.75, True ))
 
         elif tutorial_num == 4:
+            print('line 223: Tutorial 4 has been reached')
             content.ids.title.text = 'Tutorial Message 4'
             content.ids.message.text = "This is where todays time table would be."
             pos_initial = {'center_x': 0.5, 'center_y': 2}
             pos_final =   {'center_x': 0.5, 'center_y': 0.5}
             content.ids.close.bind(on_release = partial(tut1.dismiss, {'center_x': 2, 'y':0.15}, 'in_quart', 0.5, 0.75, True ))
-
         tut1.add_widget(content)
-        main_screen = app.root.get_screen('main')
-
         tut1.open(pos_initial, pos_final, 'out_bounce', 0.7)
+        if tutorial_num<4:
+            tut1.bind(on_dismiss = partial(self.schedule_tutorial, tutorial_num + 1))    
         
-        tut1.bind(on_dismiss = partial(self.schedule_tutorial, tutorial_num + 1))    
-    
+
     def schedule_tutorial(self, tut_num, *args):
         print('Hello I was called')
         if tut_num<=4:
@@ -594,26 +595,47 @@ class TimeTableApp(App):
                 'button': '#F9F9F9', 
                 'buttondown': '#D9D9D9'}
 
-    theme = treebork
-    plat = None
+    theme_list = ListProperty([treebork, moonsugar, carlburo, xacid])
+    theme = DictProperty(treebork)
+    theme_index = NumericProperty(0)
+    plat = StringProperty('')
     animations = True
     time = StringProperty('')
+    
+    def theme_switch(self):
+        if self.theme_index<len(self.theme_list)-1:
+            self.theme_index += 1
+            self.theme = self.theme_list[self.theme_index]
+            Window.clearcolor = get_color_from_hex(self.theme['cols'])
+            with open('theme.txt', 'w') as f:
+                f.write(str(self.theme_index))
+        else:
+            self.theme_index = 0   
+            self.theme = self.theme_list[self.theme_index]
+            Window.clearcolor = get_color_from_hex(self.theme['cols'])
+            with open('theme.txt', 'w') as f:
+                f.write(str(self.theme_index))
     def on_start(self):
         self.root.get_screen('UserInput').screen_order()
+        if os.path.isfile('theme.txt'):
+            with open('theme.txt', 'r') as f:
+                self.theme_index = int(f.read())
+            self.theme = self.theme_list[self.theme_index]
+            Window.clearcolor = get_color_from_hex(self.theme['cols'])
     def build(self):
-        
         global app
-        Window.clearcolor = RGBA(self.theme['cols'])
+        Window.clearcolor = get_color_from_hex(self.theme['cols'])
         self.plat = platform
+        print('This is this the platform: ', self.plat)
         app = self
         Clock.schedule_interval(self.assign_time, 0.5)
     def set_btn_col(self, ch, btn):
         if ch==0:
-            btn.background_color = self.theme['buttondown']
+            btn.background_color = get_color_from_hex(self.theme['buttondown'])
         elif ch == 1:
-            btn.background_color = self.theme['button']
+            btn.background_color = get_color_from_hex(self.theme['button'])
         elif ch == 2:
-            btn.background_color = self.theme['tile_grid']
+            btn.background_color = get_color_from_hex(self.theme['tile_grid'])
     def assign_time(self, *args):
         self.time = time.asctime(time.localtime(time.time()))
     

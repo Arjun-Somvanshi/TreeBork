@@ -116,7 +116,6 @@ Screen_Manager:
         height: dp(30)
         disabled_color: self.color
         color: RGBA(app.theme['main_fonts'])
-
     ScrollView:
         do_scroll_x: False
         do_scroll_y: True
@@ -131,7 +130,7 @@ Screen_Manager:
             disabled_color: self.color
             width: root.width - root.width/11
             #halign: 'center'
-            color: app.theme['secondary_color']
+            color: RGBA(app.theme['secondary_color'])
             line_height: 1.5
             size_hint: None, None
             font_size: sp(16)
@@ -477,7 +476,7 @@ Screen_Manager:
                 Rectangle:
                     size: self.size
                     pos: self.pos
-            size_hint_x: 0.7 if app.plat != 'android' else 0.85
+            size_hint_x: 0.9 if app.plat == 'android' else 0.7
             size_hint_min_x: dp(200)
             size_hint_max_x: dp(400)
             pos_hint: {'center_x': 0.5}
@@ -554,9 +553,12 @@ Screen_Manager:
                 id: add
                 text: 'Add a subject'
                 on_release: root.add_subject()
+                font_size: sp(14)
             CustomButton:
                 id: weekly
-                text: 'Weekly'
+                font_size: sp(14)
+                text: 'Theme Switch'
+                on_release: app.theme_switch()
             CustomButton:
                 id: settings
                 text: 'Edit/Remove'
