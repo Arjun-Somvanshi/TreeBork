@@ -20,10 +20,11 @@ from natsort import natsorted
 import time
 import json
 import os
+from DropDown import UIDropDown
 
 app = None
 
-if platform != 'android':
+if platform != 'android' and 1==0:
     Window.minimum_width = dp(500)  
     Window.minimum_height = dp(600)
 
@@ -522,6 +523,18 @@ class MainScreen(Screen):
         UserInput_screen.ids.user_input_sc_manager.transition = NoTransition()
         UserInput_screen.ids.user_input_sc_manager.current = 'AddSubject'
     
+    def add_subject_or_assignment(self):
+        print('add was called on_set fired')
+        global app
+        print(self.ids.dropdown.text)
+        if self.ids.dropdown.text == 'Subject':
+            app.root.transition = SlideTransition(direction='right')            
+            app.root.current = 'UserInput'
+        elif self.ids.dropdown.text == 'Assignment':
+             app.root.transition = SlideTransition(direction='right')            
+             app.root.current = 'AssignmentScreen'
+            
+    
     def show_day(self, text):
         self.data = []
         for day in self.timetable:
@@ -643,6 +656,19 @@ class SubjectButton(Button):
 
         with open('slots.json', 'w') as f:
             json.dump(slots_data, f)
+
+class Assignment(Screen):
+    def on_enter(self):
+        for day in range(1, 31):
+            self.ids.day_drop.elements.append(str(day))
+        months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        self.ids.month_drop.elements = months
+        for i in range(4):
+            global app        
+            year = str(int(app.time.split(' ')[-1]) + i)
+            self.ids.year_drop.elements.append(year)
+
+    
                     
 class TimeTableScreen(Screen):
     pass

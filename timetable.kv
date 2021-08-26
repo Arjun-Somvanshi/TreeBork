@@ -3,7 +3,7 @@
 Screen_Manager:
     UserInput: 
     MainScreen:
-    TimeTableScreen:
+    Assignment:
     CustomizeScreen:
 
 <CustomTextInput@TextInput>:
@@ -79,6 +79,21 @@ Screen_Manager:
     color: RGBA(app.theme['secondary_color'])
     markup: True
 
+<CalanderDrop@UIDropDown>:
+    color: app.theme['secondary_color']
+    color: app.theme['secondary_color']
+    background_color: RGBA(app.theme['button']) if self.state == 'down' else RGBA(app.theme['buttondown'])
+    background_normal: ''
+    background_down: ''
+    dd_background_color: RGBA(app.theme['tile_background'])
+    dd_item_color: [RGBA(app.theme['button']), RGBA(app.theme['buttondown'])]
+    dd_item_font_color: RGBA(app.theme['secondary_color'])  
+    dd_open_vertical: 'down'
+    dd_width: self.width + dp(20)
+    dd_item_font_size: sp(16)
+    calculate_ddheight: True
+    show_items: 5 
+
 <Tile>:
     canvas.before:
         Color:
@@ -95,6 +110,10 @@ Screen_Manager:
         id: subject
         text: '[b]' + root.subject_name + '[/b]'
         color: RGBA(app.theme['main_fonts'])
+        shorten: True
+        shorten_from: 'right'
+        text_size: self.width - dp(5), None
+        halign: 'center'
     TileLabel:
         id: time
         text: root.time
@@ -103,12 +122,18 @@ Screen_Manager:
         TileLabel:
             id: slot
             text: root.slot
+            shorten_from: 'right'
+            text_size: self.width - dp(5), None
+            halign: 'center'
         TileLabel:
             id: sub_code
             text: root.subject_code 
     TileLabel:
         id: academic_block
         text: root.academic_block
+        shorten_from: 'right'
+        text_size: self.width - dp(5), None
+        halign: 'center'
 
 <QuickMessage>:
     canvas.before:
@@ -276,88 +301,85 @@ Screen_Manager:
             name: 'AddSubject'
             BoxLayout:
                 orientation: 'vertical'
-                spacing: root.height/10
                 padding: dp(20)
+                spacing: dp(10)
                 HeadingLabel:
                     id: title_add
                     text: 'Enter The Subject Details' 
                     text_size: root.width - dp(30), None
+                Label:
+                    id: success
+                    text: ''
+                    size_hint_y: None
+                    height: dp(40)
+                    font_size: dp(15)
+                    text_size: (self.width - dp(40), None)
+                    color: RGBA(app.theme['main_fonts'])
+                    halign: 'center'
                 BoxLayout:
+                    orientation: 'vertical'
+                    spacing: dp(10)
+                    padding: dp(20)
+                    CustomTextInput:
+                        id: subject_name
+                        hint_text: 'Subject Name'
+                        size_hint_y: None
+                        height: dp(44)
+                    CustomTextInput:
+                        id: sub_code
+                        hint_text: 'Subject Code'
+                        size_hint_y: None
+                        height: dp(45)
                     Widget:
-                        size_hint_x: 0.2
-                    GridLayout:
-                        size_hint_max:dp(630), dp(700)
-                        cols: 1
-                        spacing: root.height/10
-                        BoxLayout:
-                            size_hint_y: None
-                            height: self.minimum_height
-                            Widget:
-                                size_hint_x: 0.1
-                                size_hint_y: None
-                                height: 0
-                            BoxLayout:
-                                canvas.before:
-                                    Color:
-                                        rgba: RGBA(app.theme['tile_grid'])
-                                    Rectangle:
-                                        size: self.size
-                                        pos: self.pos
-                                orientation: 'vertical' 
-                                spacing: dp(15)
-                                size_hint_y: None
-                                padding: dp(10), dp(10), dp(10), dp(40)
-                                height: dp(325)
-                                Label:
-                                    id: success
-                                    text: ''
-                                    size_hint_y: None
-                                    height: dp(30)
-                                    font_size: dp(18)
-                                    color: RGBA(app.theme['main_fonts'])
-                                CustomTextInput:
-                                    id: subject_name
-                                    hint_text: 'Subject Name'
-                                    size_hint_y: None
-                                    height: dp(44)
-                                CustomTextInput:
-                                    id: sub_code
-                                    hint_text: 'Subject Code'
-                                    size_hint_y: None
-                                    height: dp(44)
-                                BoxLayout:
-                                    size_hint_max_y: dp(50)
-                                    CheckBox:
-                                        id: theory
-                                        active: not lab.active
-                                        enabled: self.active
-                                        color: RGBA(app.theme['main_fonts'])
-                                    Label:
-                                        text: 'Theory'
-                                        font_size: sp(17)
-                                        color: RGBA(app.theme['main_fonts'])
-                                BoxLayout:
-                                    size_hint_max_y: dp(50)
-                                    CheckBox:
-                                        id: lab
-                                        active: not theory.active
-                                        enabled: self.active
-                                        color: RGBA(app.theme['main_fonts'])
-                                    Label:
-                                        text: 'Lab'
-                                        font_size: sp(17)
-                                        color: RGBA(app.theme['main_fonts'])
-                                CustomTextInput:
-                                    id: venue
-                                    hint_text: 'Academic Building'
-                                    size_hint_y: None
-                                    height: dp(44)
-                            Widget:
-                                size_hint_x: 0.1
-                                size_hint_y: None
-                                height: 0
+                        size_hint_y: None
+                        height: dp(10)
+                    BoxLayout:
+                        size_hint_max_y: dp(50)
+                        Widget:
+                        CheckBox:
+                            id: theory
+                            active: not lab.active
+                            enabled: self.active
+                            color: RGBA(app.theme['main_fonts'])
+                            size_hint_x: None
+                            width: dp(40)
+                        Label:
+                            id: t_label
+                            text: 'Theory'
+                            font_size: sp(17)
+                            color: RGBA(app.theme['main_fonts'])
+                            size_hint_x: None
+                            width: self.texture_size[0] + dp(20)
+                        Widget:
                     Widget:
-                        size_hint_x: 0.2
+                        size_hint_y: None
+                        height: dp(10)
+                    BoxLayout:
+                        size_hint_max_y: dp(50)
+                        Widget:
+                        CheckBox:
+                            id: lab
+                            active: not theory.active
+                            enabled: self.active
+                            color: RGBA(app.theme['main_fonts'])
+                            size_hint_x: None
+                            width: dp(40)
+                        Label:
+                            text: 'Lab'
+                            font_size: sp(17)
+                            color: RGBA(app.theme['main_fonts'])
+                            size_hint_x: None
+                            width: t_label.texture_size[0] + dp(20)
+                        Widget:
+                    Widget:
+                        size_hint_y: None
+                        height: dp(10)
+                    CustomTextInput:
+                        id: venue
+                        hint_text: 'Academic Building'
+                        size_hint_y: None
+                        height: dp(44)
+                    Widget:
                 BoxLayout:
                     orientation: 'vertical'
                     BoxLayout:
@@ -545,7 +567,7 @@ Screen_Manager:
             orientation: 'vertical'
             BoxLayout:
                 size_hint_y: None
-                height: dp(30)
+                height: dp(30) 
                 spacing: dp(5)
                 id: weekbar
                 CustomButton:
@@ -611,11 +633,23 @@ Screen_Manager:
             height: dp(50)
             padding: dp(10)
             spacing: dp(50)
-            CustomButton:
-                id: add
-                text: 'Add a subject'
-                on_release: root.add_subject()
-                font_size: sp(14)
+            UIDropDown:
+                id: dropdown
+                elements: ['Subject', 'Assignment']
+                default_item: 'Add'
+                color: app.theme['secondary_color']
+                background_color: RGBA(app.theme['button']) if self.state == 'down' else RGBA(app.theme['buttondown'])
+                background_normal: ''
+                background_down: ''
+                dd_background_color: RGBA(app.theme['tile_background'])
+                dd_item_color: [RGBA(app.theme['button']), RGBA(app.theme['buttondown'])]
+                dd_item_font_color: RGBA(app.theme['secondary_color'])  
+                dd_open_vertical: 'up'
+                dd_width: self.width + dp(20)
+                dd_item_font_size: sp(13)
+                on_set: root.add_subject_or_assignment()
+                calculate_ddheight: True
+                show_items: 2
             CustomButton:
                 id: weekly
                 font_size: sp(14)
@@ -623,7 +657,7 @@ Screen_Manager:
                 on_release: app.theme_switch()
             CustomButton:
                 id: settings
-                text: 'Edit/Remove'
+                text: 'Remove'
                 on_release:
                     app.root.transition = SlideTransition(direction='left')
                     app.root.current = 'customizescreen'
@@ -654,15 +688,76 @@ Screen_Manager:
                             size_hint_y: None
                             height: self.minimum_height
                 BoxLayout:
-                    orientation: 'vertical'
-                    BoxLayout:
-                        size_hint_y: None
-                        height: dp(50)
-                        padding: dp(5)
-                        Widget:
-                        CustomButton:
-                            size_hint_max_x: dp(300)
-                            text: 'Back'
-                            on_release:
-                                root.back()
-                        Widget:
+                    size_hint_y: None
+                    height: dp(50)
+                    padding: dp(5)
+                    Widget:
+                    CustomButton:
+                        size_hint_max_x: dp(300)
+                        text: 'Back'
+                        on_release:
+                            root.back()
+                    Widget:
+<Assignment>:
+    name: 'AssignmentScreen'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(10)
+        spacing: dp(20)
+        HeadingLabel:
+            text: 'Add Assignment'
+            text_size: root.width - dp(30), None
+        CustomButton:
+            text: 'View Assignments'
+            font_size: dp(15)
+            size_hint_x: 0.33
+            size_hint_y: None
+            height: dp(40)
+            pos_hint: {'center_x': 0.5}
+        BoxLayout:
+            padding: dp(20)
+            spacing: dp(10)
+            orientation: 'vertical'
+            CustomTextInput:
+                pos_hint: {'center_x': 0.5}
+                size_hint_y: None
+                height: dp(45)
+                hint_text: 'Assignment Name (DA 1)'
+            CustomTextInput:
+                pos_hint: {'center_x': 0.5}
+                size_hint_y: None
+                height: dp(45)
+                hint_text: 'Subject Name'
+            BoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                spacing: dp(10)
+                CalanderDrop:
+                    id: day_drop
+                    default_item: 'Day'
+                CalanderDrop:
+                    id: month_drop
+                    default_item: 'Month'
+                CalanderDrop:
+                    id: year_drop
+                    default_item: 'Year'
+                    show_items: 4
+            Widget:
+            BoxLayout:
+                size_hint_y: None
+                height: dp(50)
+                padding: dp(5)
+                CustomButton:
+                    size_hint_max_x: dp(200)
+                    text: 'Back'
+                    on_release:
+                        root.back()
+                Widget:
+                CustomButton:
+                    size_hint_max_x: dp(200)
+                    text: 'Add'
+                    on_release:
+                        root.back()
+
+
+
