@@ -25,6 +25,16 @@ Screen_Manager:
     #size_hint_max_x: dp(200)
     color: RGBA(app.theme['secondary_color'])
     font_size: sp(17)
+<SubjectButton>:
+    week: False
+    background_color: RGBA(app.theme['tile_grid']) if self.week == True else RGBA(app.theme['button'])
+    on_press: app.set_btn_col(0, self) if self.week != True else app.set_btn_col(2, self)
+    on_release: app.set_btn_col(2, self) if self.week == True else app.set_btn_col(1, self)
+    background_normal: ''
+    background_down: ''
+    size_hint_max_y: dp(60)
+    color: RGBA(app.theme['secondary_color'])
+    font_size: sp(17)
 <SlotButton>:
     canvas.before:
         Color:
@@ -145,6 +155,58 @@ Screen_Manager:
             background_disabled_normal: self.background_normal
             background_color: RGBA(app.theme['tile_label'])
             text: 'Okay'
+
+<QuickWarning>:
+    canvas.before:
+        Color:
+            rgba: RGBA(app.theme['tile_background'])
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    orientation: 'vertical'
+    padding: dp(10)
+    spacing: dp(15)
+    TileLabel:
+        id: title
+        size_hint_y: None
+        height: dp(30)
+        disabled_color: self.color
+        color: RGBA(app.theme['main_fonts'])
+    ScrollView:
+        do_scroll_x: False
+        do_scroll_y: True
+        scroll_type: ['content', 'bars']
+        bar_width: 5
+        bar_color:RGBA(app.theme['tile_grid'])
+        TileLabel:
+            id: message
+            padding: dp(10), dp(10)
+            height: self.texture_size[1]
+            text_size: self.width,None
+            disabled_color: self.color
+            width: root.width - root.width/11
+            #halign: 'center'
+            color: RGBA(app.theme['secondary_color'])
+            line_height: 1.5
+            size_hint: None, None
+            font_size: sp(16)
+    BoxLayout:
+        size_hint_y: None
+        height: dp(40)
+        pos_hint: {'center': 0.5}
+        spacing: dp(10)
+        CustomButton:
+            id: no 
+            disabled_color: self.color
+            background_disabled_normal: self.background_normal
+            background_color: RGBA(app.theme['tile_label'])
+            text: 'No'
+        CustomButton:
+            id: yes 
+            disabled_color: self.color
+            background_disabled_normal: self.background_normal
+            background_color: RGBA(app.theme['tile_label'])
+            text: 'Yes'
 
 <UserInput>:
     name: 'UserInput'
@@ -562,18 +624,45 @@ Screen_Manager:
             CustomButton:
                 id: settings
                 text: 'Edit/Remove'
+                on_release:
+                    app.root.transition = SlideTransition(direction='left')
+                    app.root.current = 'customizescreen'
 <CustomizeScreen>:
-    BoxLayout:
-        orientation: 'vertical'
-        TileLabel:
-            text: 'Edit/Remove Subjects' 
-        BoxLayout:
-            RecycleView:
-                viewclass: 'CustomButton'
-                data: root.subject_list
-                RecycleBoxLayout:
+    name: 'customizescreen'
+    ScreenManager:
+        id: customscreen_manager
+        Screen:
+            name: 'viewscreen'
+            BoxLayout:
+                padding: dp(10)
+                spacing: dp(20)
+                orientation: 'vertical'
+                HeadingLabel:
+                    id: title_add
+                    text: 'Remove Subjects' 
+                    text_size: root.width - dp(30), None
+                BoxLayout:
+                    RecycleView:
+                        viewclass: 'SubjectButton'
+                        data: root.subject_list
+                        RecycleBoxLayout:
+                            orientation: 'vertical'
+                            default_size_hint: (1, None)
+                            default_size: (None, dp(60))
+                            padding: dp(20)
+                            spacing: dp(10)
+                            size_hint_y: None
+                            height: self.minimum_height
+                BoxLayout:
                     orientation: 'vertical'
-                    default_size_hint: (1, None)
-                    default_size: (None, dp(60))
-                    size_hint_y: None
-                    height: self.minimum_height
+                    BoxLayout:
+                        size_hint_y: None
+                        height: dp(50)
+                        padding: dp(5)
+                        Widget:
+                        CustomButton:
+                            size_hint_max_x: dp(300)
+                            text: 'Back'
+                            on_release:
+                                root.back()
+                        Widget:

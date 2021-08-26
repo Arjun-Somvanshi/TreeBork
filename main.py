@@ -7,7 +7,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.modalview import ModalView
 from kivy.uix.button import Button
-from kivy.properties import StringProperty, ListProperty, DictProperty, BooleanProperty, NumericProperty
+from kivy.properties import StringProperty, ListProperty, DictProperty, BooleanProperty, NumericProperty, ObjectProperty
 from kivy.utils import get_color_from_hex
 from kivy.core.window import Window
 from kivy.metrics import dp, sp
@@ -15,6 +15,8 @@ from kivy.clock import Clock
 from kivy.utils import platform
 from functools import partial
 from kivy.animation import Animation
+from plyer import notification
+from natsort import natsorted
 import time
 import json
 import os
@@ -50,14 +52,12 @@ class CustomModalView(ModalView): # here I have made a custom modal view so that
         if animate and app.animations: # we have to parameters to decide whether animation should occur or
         # not, incase, the user decides to not use animations on slow hardware, app.animations will be set to false, 
         # if the developer doen't wanna use the animation then he/she can set animate to false
-            print('line 53: Inside the open function')
             self.disabled = True
             self.pos_hint = pos_hint_initial
             anim = Animation(pos_hint = pos_hint_final, t = t, duration = d1)
             anim &= Animation(opacity = 1, t=t, duration=d2)
             anim.start(self)
             anim.bind(on_complete=self.enable_popup)
-            print('line 60 open executed')
         else: 
             self.opacity = 1
             self.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
@@ -81,6 +81,9 @@ class CustomModalView(ModalView): # here I have made a custom modal view so that
         super(CustomModalView, self).dismiss()
 
 class QuickMessage(BoxLayout):
+    pass
+
+class QuickWarning(BoxLayout):
     pass
     
 class SlotButton(Button):
@@ -167,15 +170,12 @@ class UserInput(Screen):
 		      ]
     
     def screen_order(self):
-        print('hello screen order has begun')
         if os.path.isfile("schedule_type.txt"):
-            print('hello the screen is changing now')
             self.manager.transition = NoTransition()
             self.manager.current = 'main'
             self.ids.user_input_sc_manager.current = 'AddSubject'
     
     def set_schedule_type(self):
-        print('setting the schedule')
         global app
         if self.ids.vit.enabled:
             self.schedule_type = 'VIT'
@@ -221,7 +221,6 @@ class UserInput(Screen):
             content.ids.close.bind(on_release = partial(tut1.dismiss, {'right': 4, 'y':0.15}, 'in_quart', 0.5, 0.75, True ))
 
         elif tutorial_num == 4:
-            print('line 223: Tutorial 4 has been reached')
             content.ids.title.text = 'Tutorial Message 4'
             content.ids.message.text = "This is where todays time table would be."
             pos_initial = {'center_x': 0.5, 'center_y': 2}
@@ -234,7 +233,6 @@ class UserInput(Screen):
         
 
     def schedule_tutorial(self, tut_num, *args):
-        print('Hello I was called')
         if tut_num<=4:
             Clock.schedule_once(partial(self.tutorial, tut_num), 0.2)
 
@@ -245,7 +243,12 @@ class UserInput(Screen):
             self.slot_data = []
             # checking if this is the first subject to be added
             if os.path.isfile("slots.json"):
-                self.first_added_subject = False
+                with open('slots.json', 'r') as f:
+                    data = json.load(f)
+                if len(data['lab_slots']) == 84 and len(data['theory_slots']) == 54:
+                    self.first_added_subject = True
+                else:
+                    self.first_added_subject = False
 
             else:
                 self.first_added_subject = True
@@ -425,10 +428,8 @@ class UserInput(Screen):
                         #print('Chosen: ',chosen_slot)
                         #print('Slot: ',slot)
                         if chosen_slot == slot:
-                            print('matching slots')
                             index_of_slot = time_table_dictionary[day].index(slot)
                             # fetching time
-                            print('this is the index: ', index_of_slot)
                             timing = time_of_slots[index_of_slot]
                             time_as_string = str(timing[0][0]) + ':' + str(timing[0][1])
                             time_as_string += ' - ' + str(timing[1][0]) + ':' + str(timing[1][1])
@@ -445,7 +446,6 @@ class UserInput(Screen):
             for day in mainscreen.timetable:
                 mainscreen.timetable[day] = self.bubble_sort(mainscreen.timetable[day])
             mainscreen.set_data()
-            print('This is the data: ', mainscreen.data)
 
             with open('timetable.json', 'w') as f:
                 json.dump(mainscreen.timetable, f, indent = 2)
@@ -474,39 +474,43 @@ class MainScreen(Screen):
         if os.path.isfile('timetable.json'):
             with open('timetable.json', 'r') as f:
                 self.timetable = json.load(f)
-            Clock.schedule_once(self.set_data)
-        
+        Clock.schedule_once(self.set_data)
+        Clock.schedule_once(self.notify_user, 5)
+
+    def notify_user(self, dt):
+        #notification.notify('Hello', 'Submit this DA')
+        pass
+    def on_pre_enter(self):
+        self.set_data()
 
     def set_data(self, *args):
         # to set the data to the appropriate day
-        print('SET DATA was called')
         global app
-        today = app.time.split(' ')[0].lower()
-        self.data = []
-        for day in self.timetable:
-            if day[:3] == today:
-                print('setting the data')
-                for slot_details in self.timetable[day]:
-                    print('The data list is appending')
-                    self.data.append({
-                                        'subject_name': slot_details['subject_name'],
-                                        'subject_code': slot_details['subject_code'],
-                                        'slot': slot_details['slot'],
-                                        'time': slot_details['time'],
-                                        'academic_block': slot_details['venue'],
-                                    })
-                break
-        a = 0
-        for btn in self.ids.weekbar.walk(restrict=True):
-            if a != 0:
-                if btn.text.lower() == today:
-                    btn.week = True
-            a+=1
+        if os.path.isfile('timetable.json'):
+            today = app.time.split(' ')[0].lower()
+            self.data = []
+            for day in self.timetable:
+                if day[:3] == today:
+                    for slot_details in self.timetable[day]:
+                        self.data.append({
+                                            'subject_name': slot_details['subject_name'],
+                                            'subject_code': slot_details['subject_code'],
+                                            'slot': slot_details['slot'],
+                                            'time': slot_details['time'],
+                                            'academic_block': slot_details['venue'],
+                                        })
+                    break
+            a = 0
+            for btn in self.ids.weekbar.walk(restrict=True):
+                if a != 0:
+                    if btn.text.lower() == today:
+                        btn.week = True
+                    else:
+                        btn.week = False
+                a+=1
 
     def on_enter(self):
-        print('Is this the first run?: ', self.first_run)
         if self.first_run:
-            print('Is this the first run?: ', self.first_run)
             self.manager.get_screen('UserInput').tutorial(1)
             self.first_run = False
             #pass
@@ -522,9 +526,7 @@ class MainScreen(Screen):
         self.data = []
         for day in self.timetable:
             if day[:3] == text.lower():
-                print('New day was found')
                 for slot_details in self.timetable[day]:
-                    print('The data list is appending for the new day')
                     self.data.append({
                                         'subject_name': slot_details['subject_name'],
                                         'subject_code': slot_details['subject_code'],
@@ -547,11 +549,101 @@ class MainScreen(Screen):
 
 class CustomizeScreen(Screen):
     subject_list = ListProperty([])
-    def on_enter(self):
-        with open('slots.json', 'r') as f:
-            subject_data = json.load(f)
-        
+    subject_names = ListProperty([])
+    slot_list = DictProperty([])
+    def on_pre_enter(self):
+        try:
+            with open('timetable.json', 'r') as f:
+                self.subject_data = json.load(f)
+        except:
+            pass
+        else:
+            self.populate_unique_subjects()
+    def populate_unique_subjects(self):
+        for key in self.subject_data:
+            for item in self.subject_data[key]:
+                if item['subject_name'] in self.subject_names :
+                    if item['slot'] in self.slot_list[item['subject_name']]:
+                        pass                   
+                    else:
+                        self.slot_list[item['subject_name']].append(item['slot'])
+                else:
+                    self.subject_names.append(item['subject_name'])
+                    self.slot_list[item['subject_name']] = [item['slot']]
+                    self.subject_list.append({'text':item['subject_name'], 'font_size': sp(18), 'owner': self, 'subject': item})
+        print(self.subject_list)
 
+    def back(self):
+        global app
+        mainscreen = app.root.get_screen('main')
+        if os.path.isfile('timetable.json'):
+            with open('timetable.json', 'r') as f:
+                mainscreen.timetable = json.load(f)
+        app.root.transition = SlideTransition(direction='right')
+        app.root.current = 'main'
+        
+class SubjectButton(Button):
+    owner = ObjectProperty(None)
+    subject = DictProperty({})
+    def on_release(self):
+        design = QuickWarning()
+        design.ids.title.text = 'Delete Subject'
+        design.ids.message.text = 'Are you sure you want to delete ' + self.text + '?'
+        self.error_dialogue = CustomModalView(
+                                            size_hint = (0.35, 0.2),
+                                            size_hint_max = (dp(400), dp(300)),
+                                            size_hint_min = (dp(250), dp(200)),
+                                            auto_dismiss = False,
+                                            opacity = 0,
+                                            overlay_color = (0,0,0,0.5)
+        )
+        self.error_dialogue.add_widget(design)
+        self.error_dialogue.open({'center_x': 0.5, 'center_y': 2}, {'center_x': 0.5, 'center_y': 0.5}, 'out_expo')
+        design.ids.no.bind(on_release = partial(self.error_dialogue.dismiss, {'center_x': 2, 'center_y': 0.5}, 'in_expo', 0.5, 0.75, True))
+        design.ids.yes.bind(on_release = self.delete_subject)
+
+    def delete_subject(self, dt):
+        with open('timetable.json', 'r') as f:
+            self.subject_data = json.load(f)
+        pop_list = []
+        for key in self.subject_data:
+            for item in self.subject_data[key]:
+                if item['subject_name'] == self.subject['subject_name']:
+                    pop_list.append((key,item))
+        for item in pop_list:
+            print(self.subject_data)
+            self.subject_data[item[0]].pop(self.subject_data[item[0]].index(item[1]))
+        with open('timetable.json', 'w') as f:
+            json.dump(self.subject_data, f, indent=2)
+        index = self.owner.subject_list.index({'text':self.text, 'font_size': sp(18), 'owner': self.owner, 'subject':self.subject })
+        self.owner.subject_list.pop(index)
+        self.error_dialogue.dismiss({'center_x': 2, 'center_y': 0.5}, 'in_expo', 0.5, 0.75, True)
+        global app
+        mainscreen = app.root.get_screen('main')
+        mainscreen.set_data()
+        with open('slots.json', 'r') as f:
+            slots_data = json.load(f)
+        if self.subject['slot'][0] == 'L':
+            lab_slots = slots_data['lab_slots']    
+            for slot in self.owner.slot_list[self.text]:
+                lab_slots.append(slot)
+            lab_slots = natsorted(lab_slots)
+            print(lab_slots)
+            slots_data['lab_slots'] = lab_slots
+        else:
+            print('BEFORE SORTING')
+            theory_slots = slots_data['theory_slots']
+            print(theory_slots)
+            for slot in self.owner.slot_list[self.text]:
+                theory_slots.append(slot)
+            theory_slots.sort()
+            print('AFTER SORTING')
+            print(theory_slots)
+            slots_data['theory_slots'] = theory_slots
+
+        with open('slots.json', 'w') as f:
+            json.dump(slots_data, f)
+                    
 class TimeTableScreen(Screen):
     pass
 
@@ -626,8 +718,8 @@ class TimeTableApp(App):
         global app
         Window.clearcolor = get_color_from_hex(self.theme['cols'])
         self.plat = platform
-        print('This is this the platform: ', self.plat)
         app = self
+        self.assign_time()
         Clock.schedule_interval(self.assign_time, 0.5)
     def set_btn_col(self, ch, btn):
         if ch==0:
