@@ -81,8 +81,7 @@ Screen_Manager:
 
 <CalanderDrop@UIDropDown>:
     color: app.theme['secondary_color']
-    color: app.theme['secondary_color']
-    background_color: RGBA(app.theme['button']) if self.state == 'down' else RGBA(app.theme['buttondown'])
+    background_color: RGBA(app.theme['button']) if self.state == 'normal' else RGBA(app.theme['buttondown'])
     background_normal: ''
     background_down: ''
     dd_background_color: RGBA(app.theme['tile_background'])
@@ -638,7 +637,7 @@ Screen_Manager:
                 elements: ['Subject', 'Assignment']
                 default_item: 'Add'
                 color: app.theme['secondary_color']
-                background_color: RGBA(app.theme['button']) if self.state == 'down' else RGBA(app.theme['buttondown'])
+                background_color: RGBA(app.theme['button']) if self.state == 'normal' else RGBA(app.theme['buttondown'])
                 background_normal: ''
                 background_down: ''
                 dd_background_color: RGBA(app.theme['tile_background'])
@@ -719,11 +718,13 @@ Screen_Manager:
             spacing: dp(10)
             orientation: 'vertical'
             CustomTextInput:
+                id: assignment_name
                 pos_hint: {'center_x': 0.5}
                 size_hint_y: None
                 height: dp(45)
                 hint_text: 'Assignment Name (DA 1)'
             CustomTextInput:
+                id: subject_name
                 pos_hint: {'center_x': 0.5}
                 size_hint_y: None
                 height: dp(45)
@@ -751,13 +752,14 @@ Screen_Manager:
                     size_hint_max_x: dp(200)
                     text: 'Back'
                     on_release:
-                        root.back()
+                        app.root.transition = SlideTransition(direction='left') 
+                        app.root.current = 'main'
                 Widget:
                 CustomButton:
                     size_hint_max_x: dp(200)
                     text: 'Add'
                     on_release:
-                        root.back()
+                        root.add_assignment()
 
 
 

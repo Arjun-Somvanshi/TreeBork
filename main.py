@@ -476,13 +476,12 @@ class MainScreen(Screen):
             with open('timetable.json', 'r') as f:
                 self.timetable = json.load(f)
         Clock.schedule_once(self.set_data)
-        Clock.schedule_once(self.notify_user, 5)
 
     def notify_user(self, dt):
-        #notification.notify('Hello', 'Submit this DA')
         pass
     def on_pre_enter(self):
         self.set_data()
+        self.ids.dropdown.text = 'Add'
 
     def set_data(self, *args):
         # to set the data to the appropriate day
@@ -661,12 +660,91 @@ class Assignment(Screen):
     def on_enter(self):
         for day in range(1, 31):
             self.ids.day_drop.elements.append(str(day))
-        months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-        self.ids.month_drop.elements = months
+        self.months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        self.number_of_days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        self.ids.month_drop.elements = self.months
         for i in range(4):
             global app        
             year = str(int(app.time.split(' ')[-1]) + i)
             self.ids.year_drop.elements.append(year)
+    def add_assignment(self):
+        global app
+        # check if the due date is valid
+        day = self.ids.day_drop.text
+        month = self.ids.month_drop.text
+        year = self.ids.year_drop.text
+        date = []
+        error = False
+        if day == 'Day' or month == 'Month' or year == 'Year':
+            quick_message('Date Error', 'Enter a Valid Date')
+        else:
+            leap = False
+            if month == 'Feb':
+                #check if the year is a leap year
+                if int(year)%100 != 0:
+                    if int(year)%4 == 0:
+                        leap = True
+                elif int(year)%400 == 0:
+                    leap = True
+                
+                if leap:
+                    if int(day)>29:
+                        quick_message('Date Error', 'This day does not exist in the given month.')
+                        error = True
+                else:
+                    if int(day)>28:
+                        quick_message('Date Error', 'This day does not exist in the given month.')
+                        error = True
+            
+            if not error:
+                if month in ['Apr', 'June', 'Sep', 'Nov']:
+                    if int(day)>30:
+                        quick_message('Date Error', 'This day does not exist in the given month.')
+                        error = True
+
+            # saving the da on database
+            if not error:
+                date_as_key = day + "-" + month + "-" + year
+                if os.path.isfile("assignments.json"):
+                    with open("assignments.json", 'r') as f:
+                        assignments = json.load(f)
+                    if date_as_key in assignments.keys():
+                        assignments[date_as_key].append({"subject_name": self.ids.subject_name.text, "detail": self.ids.assignment_name.text, "due": date_as_key})
+                    else:
+                        assignments[date_as_key]= [{"subject_name": self.ids.subject_name.text, "detail": self.ids.assignment_name.text, "due": date_as_key}]
+                    with open("assignments.json", 'w') as f:
+                        json.dump(assignments, f, indent=2)
+                else:
+                    assignments = {}
+                    assignments[date_as_key]= [{"subject_name": self.ids.subject_name.text, "detail": self.ids.assignment_name.text, "due": date_as_key}]
+                    with open("assignments.json", 'w') as f:
+                        json.dump(assignments, f, indent=2)
+
+
+            # when we figure out scheduling notifications
+            schedule_works_someday = False
+            if schedule_works_someday:
+            # check if the due date is after the current date or on the current date
+                if not error:
+                    date = [app.time.split(' ')[1], app.time.split(' ')[3], app.time.split(' ')[5]]
+                    if int(year) == int(date[2]):
+                        if self.months.index(month) <= self.months.index(date[0]):
+                            if int(day)<int(date[1]):
+                                quick_message('Date Error', 'This day is in the past.')
+                                error = True
+            
+            # schedule it to push notifications every hour on that day
+                if not error:
+                    import datetime
+                    future_date = datetime.datetime(int(year), self.months.index(month) + 1, int(day))
+                    today = datetime.datetime(int(date[2]), self.months.index(date[0]) + 1, int(date[1]))
+                    difference = future_date - today
+                    total_seconds = difference.total_seconds()
+                    Clock.schedule_once(self.push_assignment_notification, 10)
+                    #Clock.schedule(self.push_assignment_notification, total_seconds)
+
+    def push_assignment_notification(self, dt):
+        notification.notify('Hello', 'Submit this DA', app_name = 'TreeBork')
 
     
                     
@@ -746,7 +824,27 @@ class TimeTableApp(App):
         self.plat = platform
         app = self
         self.assign_time()
+        self.push_assignment_notification()
         Clock.schedule_interval(self.assign_time, 0.5)
+
+    def push_assignment_notification(self, *args):
+        if os.path.isfile('assignments.json'):
+            with open("assignments.json", 'r') as f:
+                assignments = json.load(f)
+            today = self.time.split(' ')
+            for key in assignments:
+                print('REACHED TO LOADING ASSIGNMENTS')
+                print(today)
+                print(today[2] + '-' + today[1] + '-' + today[4], key)
+                if key == today[2] + '-' + today[1] + '-' + today[4]:
+                    print('hello')
+                    for due_assignment in assignments[key]:
+                        title_message = "Due Date!"      
+                        message = "Submission for " +  due_assignment['subject_name'] + " " + due_assignment['detail'] + " is today."
+                        notification.notify(title_message, message = message, app_name = 'TreeBork')
+            if assignments != {}:
+                Clock.schedule_interval(self.push_assignment_notification, 3600)
+
     def set_btn_col(self, ch, btn):
         if ch==0:
             btn.background_color = get_color_from_hex(self.theme['buttondown'])
